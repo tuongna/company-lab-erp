@@ -7,7 +7,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { ServiceRequestStatus } from '@clt/contracts';
+import { ServiceRequestStatus } from '@companylab/contracts';
 import { ServiceRequestEntity } from './service-request.entity';
 import { EmployeeEntity } from '../../organization/domain/employee.entity';
 

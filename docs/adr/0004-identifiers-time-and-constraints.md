@@ -17,17 +17,20 @@
 ## Decision
 
 **Identifiers**
+
 - Every table: `id uuid` primary key (generated in DB).
 - Migrated tables also have `legacy_id text UNIQUE NULL`. New records created in
   the web app get a human-readable code from a sequence (e.g. `REQ-2026-000123`).
 
 **Time**
+
 - All instants stored as `timestamptz`. Ingestion converts serial → local
   wall-clock in `Asia/Ho_Chi_Minh` (UTC+7, no DST) → UTC explicitly. Never rely
   on server or Apps Script timezone.
 - API returns ISO-8601 UTC; the web formats in the business timezone.
 
 **Integrity enforced in PostgreSQL, not only in code**
+
 - Foreign keys for requester, assignee, actor, asset.
 - `CHECK (status <> 'ASSIGNED' OR holder_employee_id IS NOT NULL)` and
   `CHECK (status <> 'AVAILABLE' OR holder_employee_id IS NULL)`.
@@ -39,4 +42,4 @@
 ## Consequences
 
 - Rows violating these rules cannot enter core tables; they land in quarantine
-  with a reason code — this *is* the full-coverage data check the legacy lacked.
+  with a reason code — this _is_ the full-coverage data check the legacy lacked.

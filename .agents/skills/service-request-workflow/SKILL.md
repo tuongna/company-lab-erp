@@ -9,12 +9,12 @@ Read first: `docs/adr/0003-service-request-workflow-fsm.md`, rule `domain-glossa
 
 ## Where things live
 
-| Piece | Location |
-|---|---|
-| Status / type enums, transition table, role matrix | `packages/contracts/src/service-request/` |
-| Guards & side effects per type | `apps/api/src/modules/service-request/domain/policies/` |
+| Piece                                               | Location                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| Status / type enums, transition table, role matrix  | `packages/contracts/src/service-request/`                                |
+| Guards & side effects per type                      | `apps/api/src/modules/service-request/domain/policies/`                  |
 | Transition use case (transaction, locking, history) | `apps/api/src/modules/service-request/application/transition.service.ts` |
-| Asset side effects | `asset` module service, called with the same `EntityManager` |
+| Asset side effects                                  | `asset` module service, called with the same `EntityManager`             |
 
 ## Steps
 

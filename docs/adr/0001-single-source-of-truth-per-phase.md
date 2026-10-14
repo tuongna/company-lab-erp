@@ -19,11 +19,11 @@ conflicts cannot be detected reliably.
 Exactly one system is the **system of record (SoR)** for a given workflow at any
 time. Migration proceeds in phases, per workflow:
 
-| Phase | SoR | Sync direction | Web app |
-|---|---|---|---|
-| A. Shadow | Google Sheets | Sheets → PostgreSQL (one-way) | Read-only + reconciliation report |
-| B. Flip | PostgreSQL | PostgreSQL → Sheets (write-back via outbox) | Read/write; sheet becomes a read model |
-| C. Retire | PostgreSQL | none (sheet frozen / archived) | Full ownership |
+| Phase     | SoR           | Sync direction                              | Web app                                |
+| --------- | ------------- | ------------------------------------------- | -------------------------------------- |
+| A. Shadow | Google Sheets | Sheets → PostgreSQL (one-way)               | Read-only + reconciliation report      |
+| B. Flip   | PostgreSQL    | PostgreSQL → Sheets (write-back via outbox) | Read/write; sheet becomes a read model |
+| C. Retire | PostgreSQL    | none (sheet frozen / archived)              | Full ownership                         |
 
 Rules:
 

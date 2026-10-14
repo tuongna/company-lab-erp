@@ -23,11 +23,14 @@ description: Use this skill when a decision changes architecture, data flow, mig
 - Date: YYYY-MM-DD
 
 ## Context
+
 <forces, constraints, data>
 
 ## Decision
+
 <what we do, specific enough to review code against>
 
 ## Consequences
+
 <positive, negative, follow-ups>
 ```

@@ -90,7 +90,9 @@ export class InitialSchema1760410000000 implements MigrationInterface {
         CONSTRAINT ck_history_from_status CHECK (from_status IS NULL OR from_status IN ('PENDING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'COMPLETED', 'REJECTED', 'CANCELLED'))
       );
     `);
-    await q.query(`CREATE INDEX ix_history_request_occurred ON request_history (request_id, occurred_at DESC);`);
+    await q.query(
+      `CREATE INDEX ix_history_request_occurred ON request_history (request_id, occurred_at DESC);`,
+    );
     await q.query(`CREATE INDEX ix_history_actor ON request_history (actor_id);`);
 
     // 5. Attachments
@@ -135,7 +137,9 @@ export class InitialSchema1760410000000 implements MigrationInterface {
       );
     `);
     await q.query(`CREATE INDEX ix_quarantine_sync_run ON legacy_sync.quarantine (sync_run_id);`);
-    await q.query(`CREATE INDEX ix_quarantine_sheet_reason ON legacy_sync.quarantine (sheet, reason);`);
+    await q.query(
+      `CREATE INDEX ix_quarantine_sheet_reason ON legacy_sync.quarantine (sheet, reason);`,
+    );
   }
 
   public async down(q: QueryRunner): Promise<void> {

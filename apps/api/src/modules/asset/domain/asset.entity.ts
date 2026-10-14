@@ -9,7 +9,7 @@ import {
   Index,
   VersionColumn,
 } from 'typeorm';
-import { AssetType, AssetStatus } from '@clt/contracts';
+import { AssetType, AssetStatus } from '@companylab/contracts';
 import { EmployeeEntity } from '../../organization/domain/employee.entity';
 
 @Entity('asset')

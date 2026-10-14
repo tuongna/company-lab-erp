@@ -9,7 +9,7 @@ import {
   Index,
   VersionColumn,
 } from 'typeorm';
-import { ServiceRequestType, ServiceRequestStatus } from '@clt/contracts';
+import { ServiceRequestType, ServiceRequestStatus } from '@companylab/contracts';
 import { EmployeeEntity } from '../../organization/domain/employee.entity';
 import { AssetEntity } from '../../asset/domain/asset.entity';
 

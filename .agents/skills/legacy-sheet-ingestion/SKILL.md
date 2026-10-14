@@ -23,7 +23,7 @@ Read first: rule `legacy-sheets-integration`, ADR-0001.
    - FK lookups by `legacy_id` (missing → `MISSING_FK`; numeric where an ID is
      expected → `COLUMN_SHIFT`)
 5. **Upsert**: `INSERT ... ON CONFLICT (legacy_id) DO UPDATE ... WHERE
-   target.row_hash IS DISTINCT FROM excluded.row_hash`. Order sheets by
+target.row_hash IS DISTINCT FROM excluded.row_hash`. Order sheets by
    dependency: Employees → Equipment → Requests → RequestHistory → Attachments.
 6. **Reconciliation**: add counts for the sheet to the `sync_run` report
    (source rows, upserted, unchanged, quarantined by reason).

@@ -11,6 +11,7 @@ import { SyncRunEntity, QuarantineEntity } from './modules/legacy-sync/domain/sy
 import { OrganizationModule } from './modules/organization/organization.module';
 import { AssetModule } from './modules/asset/asset.module';
 import { ServiceRequestModule } from './modules/service-request/service-request.module';
+import { LegacySyncModule } from './modules/legacy-sync/legacy-sync.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ServiceRequestModule } from './modules/service-request/service-request.
     OrganizationModule,
     AssetModule,
     ServiceRequestModule,
+    LegacySyncModule,
   ],
   controllers: [],
   providers: [],

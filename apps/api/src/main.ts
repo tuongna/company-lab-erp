@@ -17,8 +17,8 @@ async function bootstrap() {
 
   // OpenAPI Swagger Documentation
   const config = new DocumentBuilder()
-    .setTitle('CLT-ERP API')
-    .setDescription('Internal Operations ERP API - IT Asset Allocation')
+    .setTitle('CompanyLab ERP API')
+    .setDescription('CompanyLab Internal Operations ERP API - IT Asset Allocation')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

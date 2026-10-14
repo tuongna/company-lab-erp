@@ -13,14 +13,14 @@ and last sync runs. Do not change data before step 3.
 
 ## 2. Locate the layer
 
-| Symptom | Start with |
-|---|---|
-| Web ≠ Sheets | latest `sync_run` report + quarantine table ([diagnostics.sql](./references/diagnostics.sql) §1) |
-| Request stuck / wrong status | history for that request (§2), status-vs-latest-event drift (§3) |
-| Asset wrong holder / double laptop | asset invariants (§4) |
-| 409 storms | concurrent operators, stale client `version` |
-| Slow page | `EXPLAIN (ANALYZE, BUFFERS)` on the endpoint query; `pg_stat_statements` (§5) |
-| 5xx | Cloud Logging `severity>=ERROR` filtered by `requestId` |
+| Symptom                            | Start with                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Web ≠ Sheets                       | latest `sync_run` report + quarantine table ([diagnostics.sql](./references/diagnostics.sql) §1) |
+| Request stuck / wrong status       | history for that request (§2), status-vs-latest-event drift (§3)                                 |
+| Asset wrong holder / double laptop | asset invariants (§4)                                                                            |
+| 409 storms                         | concurrent operators, stale client `version`                                                     |
+| Slow page                          | `EXPLAIN (ANALYZE, BUFFERS)` on the endpoint query; `pg_stat_statements` (§5)                    |
+| 5xx                                | Cloud Logging `severity>=ERROR` filtered by `requestId`                                          |
 
 ## 3. Root cause
 

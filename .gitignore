@@ -6,3 +6,13 @@ dist/
 .turbo/
 coverage/
 .DS_Store
+*.tsbuildinfo
+graph.html
+graph.svg
+graph.png
+
+# AI IDE / Local Agent Cache & History (exclude local session state)
+.claude/
+.cursor/
+.codex/
+.gemini/

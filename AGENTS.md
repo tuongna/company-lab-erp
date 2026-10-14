@@ -1,4 +1,4 @@
-# CLT-ERP — Agent Guide
+# CompanyLab ERP — Agent Guide
 
 Internal back-office ERP replacing Google Sheets + Apps Script workflows.
 First module: **IT Asset Allocation** (laptop allocation / return / repair).
@@ -16,13 +16,13 @@ Architecture decisions live in `docs/adr/`. Read the relevant ADR before
 changing behaviour it covers; if a change contradicts an ADR, write a new ADR
 (skill `write-adr`) instead of silently diverging.
 
-| Topic | ADR |
-|---|---|
+| Topic                      | ADR  |
+| -------------------------- | ---- |
 | Migration / sync direction | 0001 |
-| Module layout | 0002 |
-| Request workflow (FSM) | 0003 |
-| IDs, time, DB constraints | 0004 |
-| Auth | 0005 |
+| Module layout              | 0002 |
+| Request workflow (FSM)     | 0003 |
+| IDs, time, DB constraints  | 0004 |
+| Auth                       | 0005 |
 
 ## Non-negotiables
 

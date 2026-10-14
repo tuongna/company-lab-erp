@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "vercel.turbo-vsc",
+    "editorconfig.editorconfig",
+    "vivaxy.vscode-conventional-commits"
+  ]
+}

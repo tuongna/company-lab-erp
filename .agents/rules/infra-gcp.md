@@ -7,14 +7,14 @@ description: Rules for Docker, GitHub Actions CI/CD, and GCP deployment (Cloud R
 
 ## Runtime topology
 
-| Component | GCP service |
-|---|---|
-| `api` (NestJS) | Cloud Run service |
-| `web` (Next.js, `output: 'standalone'`) | Cloud Run service |
-| `migrate` | Cloud Run Job (runs `db:migrate`) — executed before api rollout |
-| `legacy-sync` | Cloud Run Job, triggered by Cloud Scheduler |
-| Database | Cloud SQL PostgreSQL 16, private IP / Cloud SQL connector |
-| Secrets | Secret Manager mounted as env vars |
+| Component                               | GCP service                                                     |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `api` (NestJS)                          | Cloud Run service                                               |
+| `web` (Next.js, `output: 'standalone'`) | Cloud Run service                                               |
+| `migrate`                               | Cloud Run Job (runs `db:migrate`) — executed before api rollout |
+| `legacy-sync`                           | Cloud Run Job, triggered by Cloud Scheduler                     |
+| Database                                | Cloud SQL PostgreSQL 16, private IP / Cloud SQL connector       |
+| Secrets                                 | Secret Manager mounted as env vars                              |
 
 Region: `asia-southeast1` unless told otherwise.
 

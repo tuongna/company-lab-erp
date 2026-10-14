@@ -8,7 +8,10 @@ async function run() {
   console.log('Connected to database.');
 
   const ingestionService = new ExcelIngestionService(AppDataSource);
-  const legacyFilePath = path.resolve(__dirname, '../../../../raw/IT Operations - Legacy Demo.xlsx');
+  const legacyFilePath = path.resolve(
+    __dirname,
+    '../../../../raw/IT Operations - Legacy Demo.xlsx',
+  );
 
   await ingestionService.ingestLegacyFile(legacyFilePath);
 

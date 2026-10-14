@@ -9,7 +9,8 @@ export class ServiceRequestService {
 
   async findAll(page = 1, limit = 20, status?: string, type?: string) {
     const repo = this.dataSource.getRepository(ServiceRequestEntity);
-    const qb = repo.createQueryBuilder('req')
+    const qb = repo
+      .createQueryBuilder('req')
       .leftJoinAndSelect('req.employee', 'emp')
       .leftJoinAndSelect('req.assignedOperator', 'op')
       .leftJoinAndSelect('req.asset', 'ast')
@@ -38,8 +39,13 @@ export class ServiceRequestService {
     const reqRepo = this.dataSource.getRepository(ServiceRequestEntity);
     const histRepo = this.dataSource.getRepository(RequestHistoryEntity);
 
+    // Only query UUID column if string matches UUID format to avoid Postgres 22P02 error
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+    const where = isUuid ? [{ id }, { legacyId: id }] : { legacyId: id };
+
     const request = await reqRepo.findOne({
-      where: [{ id }, { legacyId: id }],
+      where,
       relations: ['employee', 'assignedOperator', 'asset'],
     });
 
@@ -58,9 +64,6 @@ export class ServiceRequestService {
   }
 
   async getDashboardStats() {
-    const reqRepo = this.dataSource.getRepository(ServiceRequestEntity);
-    const assetRepo = this.dataSource.getRepository(ServiceRequestEntity);
-
     const counts = await this.dataSource.query(`
       SELECT
         COUNT(*) AS total_requests,

@@ -1,18 +1,31 @@
 {
-  "name": "clt-erp",
+  "name": "companylab-erp",
   "version": "0.1.0",
   "private": true,
-  "description": "Internal ERP platform replacing Google Sheets workflows",
+  "description": "CompanyLab ERP platform replacing Google Sheets workflows",
   "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "db:migrate": "pnpm --filter @companylab/api db:migrate",
+    "db:seed": "pnpm --filter @companylab/api exec ts-node src/database/seed.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "graph": "turbo run build --graph=docs/architecture/task-graph.html",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.5.0",
     "turbo": "^2.4.4",
     "typescript": "^5.7.3"

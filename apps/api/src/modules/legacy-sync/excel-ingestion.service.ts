@@ -7,16 +7,34 @@ import * as unzipper from 'unzipper';
 import {
   AssetStatus,
   AssetType,
+  QuarantineReason,
   ServiceRequestStatus,
   ServiceRequestType,
   UserRole,
-} from '@clt/contracts';
+} from '@companylab/contracts';
 
 @Injectable()
 export class ExcelIngestionService {
   private readonly logger = new Logger(ExcelIngestionService.name);
 
   constructor(private readonly dataSource: DataSource) {}
+
+  // Quarantine row helper to prevent silent drops (ADR-0001, ADR-0004)
+  private async quarantineRow(
+    qr: any,
+    syncRunId: string,
+    sheet: string,
+    rowNumber: number | null,
+    legacyId: string | null,
+    reason: QuarantineReason,
+    raw: Record<string, string>,
+  ): Promise<void> {
+    await qr.query(
+      `INSERT INTO legacy_sync.quarantine (sync_run_id, sheet, row_number, legacy_id, reason, raw)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [syncRunId, sheet, rowNumber, legacyId, reason, JSON.stringify(raw)],
+    );
+  }
 
   // Convert Excel serial date to UTC Date
   private excelSerialToDate(serial: number): Date {
@@ -156,14 +174,32 @@ export class ExcelIngestionService {
       );
       const syncRunId = syncRunResult[0].id;
 
+      let quarantinedCount = 0;
+      let upsertedCount = 0;
+
       // 4.1 Ingest Employees
       const rawEmployees = await parseSheetRows('Employees');
       this.logger.log(`Parsed ${rawEmployees.length} employees`);
       const employeeIdMap = new Map<string, string>(); // legacy_id -> uuid
 
-      for (const r of rawEmployees) {
+      for (let i = 0; i < rawEmployees.length; i++) {
+        const r = rawEmployees[i];
+        if (!r) continue;
+        const rowNumber = i + 2; // header is row 1
         const legacyId = r['employee_id'];
-        if (!legacyId) continue;
+        if (!legacyId) {
+          await this.quarantineRow(
+            qr,
+            syncRunId,
+            'Employees',
+            rowNumber,
+            null,
+            QuarantineReason.COLUMN_SHIFT,
+            r,
+          );
+          quarantinedCount++;
+          continue;
+        }
         const name = r['name'] || 'Unknown';
         const department = r['department'] || 'General';
         const role = (r['role']?.toUpperCase() as UserRole) || UserRole.EMPLOYEE;
@@ -177,6 +213,7 @@ export class ExcelIngestionService {
           [legacyId, name, department, role, email],
         );
         employeeIdMap.set(legacyId, res[0].id);
+        upsertedCount++;
       }
 
       // 4.2 Ingest Equipment
@@ -184,14 +221,45 @@ export class ExcelIngestionService {
       this.logger.log(`Parsed ${rawEquipment.length} assets`);
       const assetIdMap = new Map<string, string>(); // legacy_id -> uuid
 
-      for (const r of rawEquipment) {
+      for (let i = 0; i < rawEquipment.length; i++) {
+        const r = rawEquipment[i];
+        if (!r) continue;
+        const rowNumber = i + 2;
         const legacyId = r['asset_id'];
-        if (!legacyId) continue;
+        if (!legacyId) {
+          await this.quarantineRow(
+            qr,
+            syncRunId,
+            'Equipment',
+            rowNumber,
+            null,
+            QuarantineReason.COLUMN_SHIFT,
+            r,
+          );
+          quarantinedCount++;
+          continue;
+        }
         const type = (r['type']?.toUpperCase() as AssetType) || AssetType.LAPTOP;
         const model = r['model'] || 'Unknown Model';
         const status = (r['status']?.toUpperCase() as AssetStatus) || AssetStatus.AVAILABLE;
         const holderLegacyId = r['holder_id'];
-        const holderId = holderLegacyId ? employeeIdMap.get(holderLegacyId) || null : null;
+        let holderId: string | null = null;
+        if (holderLegacyId) {
+          holderId = employeeIdMap.get(holderLegacyId) || null;
+          if (!holderId) {
+            await this.quarantineRow(
+              qr,
+              syncRunId,
+              'Equipment',
+              rowNumber,
+              legacyId,
+              QuarantineReason.MISSING_FK,
+              r,
+            );
+            quarantinedCount++;
+            continue;
+          }
+        }
 
         const res = await qr.query(
           `INSERT INTO asset (legacy_id, type, model, status, holder_employee_id)
@@ -201,6 +269,7 @@ export class ExcelIngestionService {
           [legacyId, type, model, status, holderId],
         );
         assetIdMap.set(legacyId, res[0].id);
+        upsertedCount++;
       }
 
       // 4.3 Ingest Requests
@@ -208,12 +277,39 @@ export class ExcelIngestionService {
       this.logger.log(`Parsed ${rawRequests.length} requests`);
       const requestIdMap = new Map<string, string>();
 
-      for (const r of rawRequests) {
+      for (let i = 0; i < rawRequests.length; i++) {
+        const r = rawRequests[i];
+        if (!r) continue;
+        const rowNumber = i + 2;
         const legacyId = r['request_id'];
         const empLegacy = r['employee_id'];
-        if (!legacyId || !empLegacy) continue;
-        const employeeId = employeeIdMap.get(empLegacy);
-        if (!employeeId) continue;
+        if (!legacyId) {
+          await this.quarantineRow(
+            qr,
+            syncRunId,
+            'Requests',
+            rowNumber,
+            null,
+            QuarantineReason.COLUMN_SHIFT,
+            r,
+          );
+          quarantinedCount++;
+          continue;
+        }
+        const employeeId = empLegacy ? employeeIdMap.get(empLegacy) : null;
+        if (!employeeId) {
+          await this.quarantineRow(
+            qr,
+            syncRunId,
+            'Requests',
+            rowNumber,
+            legacyId,
+            QuarantineReason.MISSING_FK,
+            r,
+          );
+          quarantinedCount++;
+          continue;
+        }
 
         let requestType = ServiceRequestType.ALLOCATION;
         if (r['request_type'] === 'Laptop return') requestType = ServiceRequestType.RETURN;
@@ -233,7 +329,9 @@ export class ExcelIngestionService {
         const assetLegacy = r['asset_id'];
         const assetId = assetLegacy ? assetIdMap.get(assetLegacy) || null : null;
 
-        const createdDate = r['created_at'] ? this.excelSerialToDate(parseFloat(r['created_at'])) : new Date();
+        const createdDate = r['created_at']
+          ? this.excelSerialToDate(parseFloat(r['created_at']))
+          : new Date();
 
         const res = await qr.query(
           `INSERT INTO service_request (legacy_id, employee_id, request_type, status, assigned_to, asset_id, created_at, updated_at)
@@ -243,6 +341,7 @@ export class ExcelIngestionService {
           [legacyId, employeeId, requestType, status, assignedTo, assetId, createdDate],
         );
         requestIdMap.set(legacyId, res[0].id);
+        upsertedCount++;
       }
 
       // 4.4 Ingest RequestHistory (Batched)
@@ -256,23 +355,60 @@ export class ExcelIngestionService {
         const placeholders: string[] = [];
         let pIndex = 1;
 
-        for (const h of batch) {
+        for (let j = 0; j < batch.length; j++) {
+          const h = batch[j];
+          if (!h) continue;
+          const rowNumber = i + j + 2;
           const legacyId = h['event_id'];
           const reqLegacy = h['request_id'];
           const actorLegacy = h['actor_id'];
-          if (!legacyId || !reqLegacy || !actorLegacy) continue;
+
+          if (!legacyId || !reqLegacy || !actorLegacy) {
+            await this.quarantineRow(
+              qr,
+              syncRunId,
+              'RequestHistory',
+              rowNumber,
+              legacyId || null,
+              QuarantineReason.COLUMN_SHIFT,
+              h,
+            );
+            quarantinedCount++;
+            continue;
+          }
 
           const requestId = requestIdMap.get(reqLegacy);
           const actorId = employeeIdMap.get(actorLegacy);
-          if (!requestId || !actorId) continue;
+          if (!requestId || !actorId) {
+            await this.quarantineRow(
+              qr,
+              syncRunId,
+              'RequestHistory',
+              rowNumber,
+              legacyId,
+              QuarantineReason.MISSING_FK,
+              h,
+            );
+            quarantinedCount++;
+            continue;
+          }
 
-          const toStatus = h['to_status'] ? (h['to_status'].toUpperCase().replace(/\s+/g, '_') as ServiceRequestStatus) : ServiceRequestStatus.PENDING_APPROVAL;
-          const fromStatus = h['from_status'] ? (h['from_status'].toUpperCase().replace(/\s+/g, '_') as ServiceRequestStatus) : null;
-          const occurredAt = h['occurred_at'] ? this.excelSerialToDate(parseFloat(h['occurred_at'])) : new Date();
+          const toStatus = h['to_status']
+            ? (h['to_status'].toUpperCase().replace(/\s+/g, '_') as ServiceRequestStatus)
+            : ServiceRequestStatus.PENDING_APPROVAL;
+          const fromStatus = h['from_status']
+            ? (h['from_status'].toUpperCase().replace(/\s+/g, '_') as ServiceRequestStatus)
+            : null;
+          const occurredAt = h['occurred_at']
+            ? this.excelSerialToDate(parseFloat(h['occurred_at']))
+            : new Date();
           const note = h['note'] || null;
 
-          placeholders.push(`($${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++})`);
+          placeholders.push(
+            `($${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++}, $${pIndex++})`,
+          );
           values.push(legacyId, requestId, fromStatus, toStatus, actorId, occurredAt, note);
+          upsertedCount++;
         }
 
         if (placeholders.length > 0) {
@@ -285,12 +421,15 @@ export class ExcelIngestionService {
         }
       }
 
+      const totalSourceRows =
+        rawRequests.length + rawEquipment.length + rawEmployees.length + rawHistory.length;
+
       // Update sync run stats
       await qr.query(
         `UPDATE legacy_sync.sync_run
-         SET status = 'COMPLETED', finished_at = now(), source_rows = $1, upserted = $2
-         WHERE id = $3`,
-        [rawRequests.length + rawEquipment.length + rawEmployees.length, rawRequests.length, syncRunId],
+         SET status = 'COMPLETED', finished_at = now(), source_rows = $1, upserted = $2, quarantined = $3
+         WHERE id = $4`,
+        [totalSourceRows, upsertedCount, quarantinedCount, syncRunId],
       );
 
       await qr.commitTransaction();

@@ -14,11 +14,11 @@ Transition matrix measured from legacy `RequestHistory` (29,470 events,
           └→ Cancelled
 ```
 
-| Type | Requests | Asset reference |
-|---|---|---|
-| Laptop repair | 3,218 | set at creation (employee's current laptop) |
-| Laptop allocation | 2,513 | set only on Completed (operator picks an Available laptop) |
-| Laptop return | 2,269 | set at creation (employee's current laptop) |
+| Type              | Requests | Asset reference                                            |
+| ----------------- | -------- | ---------------------------------------------------------- |
+| Laptop repair     | 3,218    | set at creation (employee's current laptop)                |
+| Laptop allocation | 2,513    | set only on Completed (operator picks an Available laptop) |
+| Laptop return     | 2,269    | set at creation (employee's current laptop)                |
 
 Legacy writes `Requests.status` and `RequestHistory` separately
 ("Trạng thái không tự tạo lịch sử"), which causes drift that the sheet

@@ -7,27 +7,27 @@ description: Domain vocabulary and business rules for IT asset requests (allocat
 
 ## Entities
 
-| Term | Legacy sheet / column | New model | Notes |
-|---|---|---|---|
-| Employee | `Employees` | `organization.employee` | `role`: Employee, Manager, Operator. Legacy has no email (ADR-0005). |
-| Asset | `Equipment` | `asset.asset` | `type`: LAPTOP, MONITOR. `status`: AVAILABLE, ASSIGNED. `holder_id` → `holder_employee_id`. |
-| Service request | `Requests` | `service_request.service_request` | `request_type`: allocation, return, repair. |
-| Request history | `RequestHistory` | `service_request.request_history` | Append-only audit trail of transitions. |
-| Attachment | `Attachments` | `service_request.attachment` | `drive_file_id` → Google Drive file. |
-| Setting | `Settings` | config / env | Not migrated as data. |
+| Term            | Legacy sheet / column | New model                         | Notes                                                                                       |
+| --------------- | --------------------- | --------------------------------- | ------------------------------------------------------------------------------------------- |
+| Employee        | `Employees`           | `organization.employee`           | `role`: Employee, Manager, Operator. Legacy has no email (ADR-0005).                        |
+| Asset           | `Equipment`           | `asset.asset`                     | `type`: LAPTOP, MONITOR. `status`: AVAILABLE, ASSIGNED. `holder_id` → `holder_employee_id`. |
+| Service request | `Requests`            | `service_request.service_request` | `request_type`: allocation, return, repair.                                                 |
+| Request history | `RequestHistory`      | `service_request.request_history` | Append-only audit trail of transitions.                                                     |
+| Attachment      | `Attachments`         | `service_request.attachment`      | `drive_file_id` → Google Drive file.                                                        |
+| Setting         | `Settings`            | config / env                      | Not migrated as data.                                                                       |
 
 Legacy derived sheets `Dashboard`, `DataChecks`, `LatestEvents` are **not**
 migrated; the new system computes these from core tables.
 
 ## Value mapping (legacy → enum)
 
-| Legacy | Enum |
-|---|---|
-| `Laptop allocation` / `Laptop return` / `Laptop repair` | `ALLOCATION` / `RETURN` / `REPAIR` |
-| `Pending approval` | `PENDING_APPROVAL` |
-| `Approved` / `In progress` / `Completed` | `APPROVED` / `IN_PROGRESS` / `COMPLETED` |
-| `Rejected` / `Cancelled` | `REJECTED` / `CANCELLED` |
-| `Available` / `Assigned` | `AVAILABLE` / `ASSIGNED` |
+| Legacy                                                  | Enum                                     |
+| ------------------------------------------------------- | ---------------------------------------- |
+| `Laptop allocation` / `Laptop return` / `Laptop repair` | `ALLOCATION` / `RETURN` / `REPAIR`       |
+| `Pending approval`                                      | `PENDING_APPROVAL`                       |
+| `Approved` / `In progress` / `Completed`                | `APPROVED` / `IN_PROGRESS` / `COMPLETED` |
+| `Rejected` / `Cancelled`                                | `REJECTED` / `CANCELLED`                 |
+| `Available` / `Assigned`                                | `AVAILABLE` / `ASSIGNED`                 |
 
 ## Lifecycle (all request types)
 
@@ -37,12 +37,12 @@ migrated; the new system computes these from core tables.
                └→ CANCELLED  (requester)
 ```
 
-| Transition | Actor role |
-|---|---|
-| create → PENDING_APPROVAL | Employee (requester) |
-| PENDING_APPROVAL → APPROVED / REJECTED | Manager |
-| PENDING_APPROVAL → CANCELLED | Requester |
-| APPROVED → IN_PROGRESS → COMPLETED | Operator |
+| Transition                             | Actor role           |
+| -------------------------------------- | -------------------- |
+| create → PENDING_APPROVAL              | Employee (requester) |
+| PENDING_APPROVAL → APPROVED / REJECTED | Manager              |
+| PENDING_APPROVAL → CANCELLED           | Requester            |
+| APPROVED → IN_PROGRESS → COMPLETED     | Operator             |
 
 ## Business rules
 

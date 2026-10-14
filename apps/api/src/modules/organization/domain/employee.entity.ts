@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { UserRole } from '@clt/contracts';
+import { UserRole } from '@companylab/contracts';
 
 @Entity('employee')
 export class EmployeeEntity {
