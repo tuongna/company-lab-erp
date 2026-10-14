@@ -1,0 +1,12 @@
+{
+  "extends": "@clt/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@modules/*": ["src/modules/*"],
+      "@common/*": ["src/common/*"],
+      "@database/*": ["src/database/*"]
+    }
+  },
+  "include": ["src/**/*", "test/**/*"]
+}
