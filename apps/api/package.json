@@ -18,7 +18,9 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "db:migrate": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "db:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
-    "db:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts"
+    "db:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
+    "db:seed": "ts-node src/database/seed.ts",
+    "db:seed:excel": "ts-node src/database/seed.ts --excel"
   },
   "dependencies": {
     "@companylab/contracts": "workspace:*",
@@ -35,6 +37,7 @@
     "dotenv": "^16.4.7",
     "exceljs": "^4.4.0",
     "fast-xml-parser": "^5.11.2",
+    "googleapis": "^186.0.0",
     "pg": "^8.13.3",
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",

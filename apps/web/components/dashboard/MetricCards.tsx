@@ -31,7 +31,7 @@ export function MetricCards({ stats, loading }: MetricCardsProps) {
         </span>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold text-slate-900">{stats.requests.total_requests}</span>
-          <span className="text-xs text-slate-400">Từ Sheets/XLSX</span>
+          <span className="text-xs text-slate-400">Từ Google Sheets</span>
         </div>
         <div className="mt-3 text-xs text-slate-500 flex gap-2">
           <span>

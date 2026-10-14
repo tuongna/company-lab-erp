@@ -26,6 +26,7 @@ export function RequestFilters({
         <select
           value={status}
           onChange={(e) => onStatusChange(e.target.value)}
+          suppressHydrationWarning
           className="bg-white border border-slate-200 text-xs rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="">Tất cả trạng thái</option>
@@ -42,6 +43,7 @@ export function RequestFilters({
         <select
           value={type}
           onChange={(e) => onTypeChange(e.target.value)}
+          suppressHydrationWarning
           className="bg-white border border-slate-200 text-xs rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="">Tất cả loại yêu cầu</option>

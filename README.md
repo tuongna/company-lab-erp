@@ -90,10 +90,17 @@ Apply database migrations:
 pnpm db:migrate
 ```
 
-_(Optional)_ Seed sample data from the legacy Excel file (`raw/IT Operations - Legacy Demo.xlsx`):
+_(Optional)_ Seed / Synchronize data from Google Sheets:
 
 ```bash
+# Check Google Sheets connection and access
+pnpm legacy:check-sheets
+
+# Synchronize directly from Google Sheets
 pnpm db:seed
+
+# (Optional fallback) Ingest from legacy Excel file
+pnpm db:seed:excel
 ```
 
 ### 5. Start Development
@@ -119,18 +126,21 @@ pnpm dev
 
 ## Available Scripts
 
-| Command           | Description                                            |
-| :---------------- | :----------------------------------------------------- |
-| `pnpm dev`        | Start all packages in development mode with hot reload |
-| `pnpm build`      | Build all applications and packages                    |
-| `pnpm test`       | Run test suites across the monorepo                    |
-| `pnpm typecheck`  | Run TypeScript type checks across all packages         |
-| `pnpm lint`       | Run linter across all packages                         |
-| `pnpm format`     | Format code with Prettier                              |
-| `pnpm db:up`      | Start local PostgreSQL 16 container                    |
-| `pnpm db:down`    | Stop local PostgreSQL container                        |
-| `pnpm db:migrate` | Run TypeORM migrations in `apps/api`                   |
-| `pnpm db:seed`    | Ingest legacy Excel sample data into PostgreSQL        |
+| Command                    | Description                                            |
+| :------------------------- | :----------------------------------------------------- |
+| `pnpm dev`                 | Start all packages in development mode with hot reload |
+| `pnpm build`               | Build all applications and packages                    |
+| `pnpm test`                | Run test suites across the monorepo                    |
+| `pnpm typecheck`           | Run TypeScript type checks across all packages         |
+| `pnpm lint`                | Run linter across all packages                         |
+| `pnpm format`              | Format code with Prettier                              |
+| `pnpm db:up`               | Start local PostgreSQL 16 container                    |
+| `pnpm db:down`             | Stop local PostgreSQL container                        |
+| `pnpm db:migrate`          | Run TypeORM migrations in `apps/api`                   |
+| `pnpm db:seed`             | Synchronize data from Google Sheets into PostgreSQL    |
+| `pnpm db:seed:excel`       | (Fallback) Ingest legacy Excel sample data into DB     |
+| `pnpm legacy:check-sheets` | Validate Google Sheets API connection and read access  |
+| `pnpm legacy:sync-sheets`  | Run Google Sheets synchronization pipeline             |
 
 ---
 

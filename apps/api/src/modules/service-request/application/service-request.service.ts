@@ -90,7 +90,9 @@ export class ServiceRequestService {
       requests: counts[0],
       assets: assetCounts[0],
       mode: 'READ_ONLY_SHADOW',
-      legacySource: 'raw/IT Operations - Legacy Demo.xlsx',
+      legacySource: process.env.LEGACY_SPREADSHEET_ID
+        ? `Google Sheets (${process.env.LEGACY_SPREADSHEET_ID})`
+        : 'Google Sheets (1-ADW3SxNi_ailWvrOUMso8wg8Gga4hVIqvNdq6bws1I)',
     };
   }
 }

@@ -73,8 +73,9 @@ export default function DashboardPage() {
           <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
           <span>
             <strong>GIAI ĐOẠN A (SHADOW RUN — CHỈ ĐỌC):</strong> Hệ thống hiện đang chạy song song
-            và lấy dữ liệu đồng bộ từ Google Sheets / XLSX. Mọi thao tác ghi mới hoặc chuyển trạng
-            thái được tạm khóa trên Web để bảo đảm tính toàn vẹn (Single Source of Truth).
+            và lấy dữ liệu đồng bộ từ Google Sheets trực tiếp qua Service Account API. Mọi thao tác
+            ghi mới hoặc chuyển trạng thái được tạm khóa trên Web để bảo đảm tính toàn vẹn (Single
+            Source of Truth).
           </span>
         </div>
         <span className="font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-semibold">

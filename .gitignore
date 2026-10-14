@@ -16,3 +16,6 @@ graph.png
 .cursor/
 .codex/
 .gemini/
+
+# Google service account (sensitive file)
+credentials/
