@@ -10,6 +10,7 @@ coverage/
 graph.html
 graph.svg
 graph.png
+docs/architecture/*.html
 
 # AI IDE / Local Agent Cache & History (exclude local session state)
 .claude/

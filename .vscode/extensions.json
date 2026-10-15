@@ -5,6 +5,7 @@
     "bradlc.vscode-tailwindcss",
     "vercel.turbo-vsc",
     "editorconfig.editorconfig",
-    "vivaxy.vscode-conventional-commits"
+    "vivaxy.vscode-conventional-commits",
+    "bierner.markdown-mermaid"
   ]
 }

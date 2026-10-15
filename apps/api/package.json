@@ -20,7 +20,9 @@
     "db:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "db:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
     "sync:run": "ts-node src/database/sync.ts",
-    "db:seed": "ts-node src/database/seed.ts"
+    "db:seed": "ts-node src/database/seed.ts",
+    "db:diagram": "ts-node src/database/scripts/generate-erd.ts",
+    "db:check-drift": "ts-node src/database/scripts/check-schema-drift.ts"
   },
   "dependencies": {
     "@companylab/contracts": "workspace:*",

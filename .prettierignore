@@ -6,3 +6,4 @@ coverage
 pnpm-lock.yaml
 skills-lock.json
 raw/*.xlsx
+docs/architecture/*.html

@@ -21,13 +21,13 @@ export function RequestFilters({
   onTypeChange,
 }: RequestFiltersProps) {
   return (
-    <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
+    <div className="p-4 border-b border-border bg-surface-subtle flex flex-wrap items-center justify-between gap-3 text-xs">
       <div className="flex items-center gap-2">
         <select
           value={status}
           onChange={(e) => onStatusChange(e.target.value)}
           suppressHydrationWarning
-          className="bg-white border border-slate-200 text-xs rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="bg-surface border border-border text-xs rounded-lg px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
         >
           <option value="">Tất cả trạng thái</option>
           <option value={ServiceRequestStatus.PENDING_APPROVAL}>
@@ -44,7 +44,7 @@ export function RequestFilters({
           value={type}
           onChange={(e) => onTypeChange(e.target.value)}
           suppressHydrationWarning
-          className="bg-white border border-slate-200 text-xs rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="bg-surface border border-border text-xs rounded-lg px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
         >
           <option value="">Tất cả loại yêu cầu</option>
           <option value={ServiceRequestType.ALLOCATION}>Cấp phát laptop</option>
@@ -53,8 +53,8 @@ export function RequestFilters({
         </select>
       </div>
 
-      <span className="text-xs text-slate-500">
-        Hiển thị trang <strong>{page}</strong> / {totalPages || 1}
+      <span className="text-xs text-muted">
+        Hiển thị trang <strong className="text-foreground">{page}</strong> / {totalPages || 1}
       </span>
     </div>
   );
