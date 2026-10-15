@@ -19,6 +19,17 @@ export interface DashboardStatsResponse {
   };
   mode: string;
   legacySource: string;
+  lastSync?: {
+    id: string;
+    status: string;
+    source: string | null;
+    extracted_at: string | null;
+    finished_at: string | null;
+    source_rows: number;
+    upserted: number;
+    unchanged: number;
+    quarantined: number;
+  } | null;
 }
 
 export interface RequestHistoryItem {

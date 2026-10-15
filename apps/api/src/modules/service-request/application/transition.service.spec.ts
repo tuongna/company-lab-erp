@@ -154,4 +154,112 @@ describe('TransitionService (FSM Execution)', () => {
     expect(availableAsset.status).toBe(AssetStatus.ASSIGNED);
     expect(availableAsset.holderEmployeeId).toBe('emp-1');
   });
+  it.each([
+    null,
+    {
+      id: 'asset-1',
+      type: AssetType.LAPTOP,
+      status: AssetStatus.ASSIGNED,
+      holderEmployeeId: 'someone-else',
+    },
+    {
+      id: 'asset-1',
+      type: AssetType.LAPTOP,
+      status: AssetStatus.AVAILABLE,
+      holderEmployeeId: null,
+    },
+  ])('rejects return of missing or unowned asset', async (asset) => {
+    emMock.findOne
+      .mockResolvedValueOnce({
+        id: 'req-1',
+        version: 1,
+        status: ServiceRequestStatus.IN_PROGRESS,
+        requestType: ServiceRequestType.RETURN,
+        employeeId: 'emp-1',
+        assetId: 'asset-1',
+      } as ServiceRequestEntity)
+      .mockResolvedValueOnce(asset as AssetEntity);
+    await expect(
+      service.transition(
+        'REQ-1',
+        { targetStatus: ServiceRequestStatus.COMPLETED, version: 1 },
+        'op-1',
+        UserRole.OPERATOR,
+      ),
+    ).rejects.toThrow(ConflictException);
+    expect(emMock.save).not.toHaveBeenCalled();
+  });
+  it('returns an owned assigned laptop and writes history atomically', async () => {
+    const asset = {
+      id: 'asset-1',
+      type: AssetType.LAPTOP,
+      status: AssetStatus.ASSIGNED,
+      holderEmployeeId: 'emp-1',
+    } as AssetEntity;
+    emMock.findOne
+      .mockResolvedValueOnce({
+        id: 'req-1',
+        version: 1,
+        status: ServiceRequestStatus.IN_PROGRESS,
+        requestType: ServiceRequestType.RETURN,
+        employeeId: 'emp-1',
+        assetId: 'asset-1',
+      } as ServiceRequestEntity)
+      .mockResolvedValueOnce(asset);
+    await service.transition(
+      'REQ-1',
+      { targetStatus: ServiceRequestStatus.COMPLETED, version: 1 },
+      'op-1',
+      UserRole.OPERATOR,
+    );
+    expect(asset.holderEmployeeId).toBeNull();
+    expect(emMock.save).toHaveBeenCalledTimes(3);
+    expect(emMock.findOne.mock.calls[0]?.[1]).toMatchObject({
+      where: { legacyId: 'REQ-1' },
+      lock: { mode: 'pessimistic_write' },
+    });
+    expect(emMock.findOne.mock.calls[0]?.[1]).not.toHaveProperty('relations');
+  });
+  it('does not allocate a monitor or a laptop already held by the same employee', async () => {
+    emMock.findOne
+      .mockResolvedValueOnce({
+        id: 'req-1',
+        version: 1,
+        status: ServiceRequestStatus.IN_PROGRESS,
+        requestType: ServiceRequestType.ALLOCATION,
+        employeeId: 'emp-1',
+        assetId: 'asset-1',
+      } as ServiceRequestEntity)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: 'asset-1',
+        type: AssetType.MONITOR,
+        status: AssetStatus.AVAILABLE,
+        holderEmployeeId: null,
+      } as AssetEntity);
+    await expect(
+      service.transition(
+        'REQ-1',
+        { targetStatus: ServiceRequestStatus.COMPLETED, version: 1 },
+        'op-1',
+        UserRole.OPERATOR,
+      ),
+    ).rejects.toThrow(ConflictException);
+  });
+  it('rejects cancellation of another employee request', async () => {
+    emMock.findOne.mockResolvedValueOnce({
+      id: 'req-1',
+      version: 1,
+      status: ServiceRequestStatus.PENDING_APPROVAL,
+      employeeId: 'emp-1',
+    } as ServiceRequestEntity);
+    await expect(
+      service.transition(
+        'REQ-1',
+        { targetStatus: ServiceRequestStatus.CANCELLED, version: 1 },
+        'emp-2',
+        UserRole.EMPLOYEE,
+      ),
+    ).rejects.toThrow(ConflictException);
+  });
 });

@@ -86,13 +86,15 @@ export class ServiceRequestService {
       FROM asset;
     `);
 
+    const sync = await this.dataSource.query(
+      `SELECT id,status,source,extracted_at,finished_at,source_rows,upserted,unchanged,quarantined,metrics FROM legacy_sync.sync_run ORDER BY started_at DESC LIMIT 1`,
+    );
     return {
       requests: counts[0],
       assets: assetCounts[0],
       mode: 'READ_ONLY_SHADOW',
-      legacySource: process.env.LEGACY_SPREADSHEET_ID
-        ? `Google Sheets (${process.env.LEGACY_SPREADSHEET_ID})`
-        : 'Google Sheets (1-ADW3SxNi_ailWvrOUMso8wg8Gga4hVIqvNdq6bws1I)',
+      legacySource: sync[0]?.source ?? 'not-synced',
+      lastSync: sync[0] ?? null,
     };
   }
 }

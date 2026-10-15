@@ -1,0 +1,38 @@
+name: Validate application and migration
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: companylab_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @companylab/contracts build
+      - run: pnpm typecheck
+      - run: pnpm --filter @companylab/contracts test
+      - run: pnpm --filter @companylab/api test --runInBand
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:test_only@localhost:5432/companylab_ci
+      - run: pnpm build

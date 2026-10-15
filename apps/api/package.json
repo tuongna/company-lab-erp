@@ -11,7 +11,7 @@
     "start:prod": "node dist/main",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'api linted'",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
@@ -19,6 +19,7 @@
     "db:migrate": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "db:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "db:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
+    "sync:run": "ts-node src/database/sync.ts",
     "db:seed": "ts-node src/database/seed.ts",
     "db:seed:excel": "ts-node src/database/seed.ts --excel"
   },
@@ -37,7 +38,7 @@
     "dotenv": "^16.4.7",
     "exceljs": "^4.4.0",
     "fast-xml-parser": "^5.11.2",
-    "googleapis": "^186.0.0",
+    "google-auth-library": "^9.15.1",
     "pg": "^8.13.3",
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@companylab/tsconfig": "workspace:*",
+    "@electric-sql/pglite": "^0.3.16",
     "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.2.3",
     "@nestjs/testing": "^10.4.15",
