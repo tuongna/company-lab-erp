@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "CompanyLab ERP platform replacing Google Sheets workflows",
-  "packageManager": "pnpm@12.11.2",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=10.0.0"
@@ -22,6 +22,9 @@
     "legacy:check-sheets": "pnpm --filter @companylab/api exec ts-node src/modules/legacy-sync/scripts/test-google-sheets.ts",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "db:diagram": "pnpm --filter @companylab/api db:diagram",
+    "db:diagram:open": "open docs/architecture/database-erd.html",
+    "db:check-drift": "pnpm --filter @companylab/api db:check-drift",
     "graph": "turbo run build --graph=docs/architecture/task-graph.html",
     "prepare": "husky",
     "sync:run": "pnpm --filter @companylab/api sync:run"

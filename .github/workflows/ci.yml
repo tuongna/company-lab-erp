@@ -35,4 +35,8 @@ jobs:
       - run: pnpm --filter @companylab/api test --runInBand
         env:
           TEST_DATABASE_URL: postgresql://postgres:test_only@localhost:5432/companylab_ci
+      - name: Check Schema Drift
+        run: pnpm db:check-drift
+        env:
+          DATABASE_URL: postgresql://postgres:test_only@localhost:5432/companylab_ci
       - run: pnpm build

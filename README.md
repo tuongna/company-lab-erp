@@ -10,7 +10,7 @@ First module: **IT Asset Allocation** (laptop allocation, return, repair).
 | Layer / Component    | Technology                               | Version / Spec                                            |
 | :------------------- | :--------------------------------------- | :-------------------------------------------------------- |
 | **Runtime**          | Node.js                                  | `>= 20.0.0` (codified in `.nvmrc` and `engines`)          |
-| **Package Manager**  | pnpm                                     | `12.11.2` (pinned via `packageManager`)                   |
+| **Package Manager**  | pnpm                                     | `10.33.0` (pinned via `packageManager`)                   |
 | **Monorepo Tool**    | Turborepo                                | `^2.4.4`                                                  |
 | **Backend**          | NestJS, TypeScript, TypeORM              | Nest 10, TS 5.7                                           |
 | **Frontend**         | Next.js (App Router), React, TailwindCSS | Next 15, React 19                                         |
@@ -44,7 +44,7 @@ First module: **IT Asset Allocation** (laptop allocation, return, repair).
 ### 1. Prerequisites
 
 - **Node.js**: `>= 20.0.0` (run `nvm use` if using NVM).
-- **pnpm**: `pnpm@12.11.2` (enable via `corepack enable`).
+- **pnpm**: `pnpm@10.33.0` (enable via `corepack enable`).
 - **Docker**: Docker Desktop / Docker Engine for PostgreSQL.
 
 ### 2. Installation
