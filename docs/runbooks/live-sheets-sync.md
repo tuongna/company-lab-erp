@@ -28,7 +28,7 @@ variables prefixed NEXT_PUBLIC_.
    and set GOOGLE_APPLICATION_CREDENTIALS to its absolute path. Do not
    commit, upload, print or send the key. This option may be disabled by
    your organization's key-creation policy.
-5. Set apps/api/.env: LEGACY_SOURCE=sheets, LEGACY_PHASE=shadow, and
+5. Set apps/api/.env: LEGACY_PHASE=shadow, and
    LEGACY_SPREADSHEET_ID (the example contains the existing demo workbook).
    The runtime requests only spreadsheets.readonly scope.
 6. Run the database migrations against your local/demo PostgreSQL first.
@@ -48,11 +48,7 @@ pnpm db:migrate
 pnpm sync:run
 ```
 
-For the bundled export, override the source explicitly:
-
-```bash
-pnpm db:seed:excel
-```
+Google Sheets is the only supported ingestion source. Excel import has been removed.
 
 A Sheets API read consists of metadata (timezone, exact tab names/grid bounds)
 then one values.batchGet with UNFORMATTED_VALUE and SERIAL_NUMBER. Unknown

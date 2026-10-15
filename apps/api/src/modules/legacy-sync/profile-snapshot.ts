@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import { SHEETS, rowsFromValues, Cell, Snapshot } from './source';
 import { validate } from './validate';
-import { XlsxFileSource } from './sources/xlsx.source';
+import { SheetsApiSource } from './sources/sheets.source';
 export async function readSnapshot(directory = process.env.SNAPSHOT_CHUNKS_DIR): Promise<Snapshot> {
   let snapshot: Snapshot;
   if (directory) {
@@ -30,9 +30,7 @@ export async function readSnapshot(directory = process.env.SNAPSHOT_CHUNKS_DIR):
       ),
     };
   } else {
-    snapshot = await new XlsxFileSource(
-      resolve(__dirname, '../../../../../raw/IT Operations - Legacy Demo.xlsx'),
-    ).read();
+    snapshot = await new SheetsApiSource(process.env.LEGACY_SPREADSHEET_ID ?? '').read();
   }
   return snapshot;
 }

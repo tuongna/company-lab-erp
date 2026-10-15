@@ -18,7 +18,6 @@
     "db:down": "docker compose -f infra/docker-compose.yml down",
     "db:migrate": "pnpm --filter @companylab/api db:migrate",
     "db:seed": "pnpm --filter @companylab/api db:seed",
-    "db:seed:excel": "pnpm --filter @companylab/api db:seed:excel",
     "legacy:sync-sheets": "pnpm --filter @companylab/api db:seed",
     "legacy:check-sheets": "pnpm --filter @companylab/api exec ts-node src/modules/legacy-sync/scripts/test-google-sheets.ts",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",

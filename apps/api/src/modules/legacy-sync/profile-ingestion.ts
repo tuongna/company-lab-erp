@@ -6,8 +6,6 @@ import { IngestionService } from './ingestion.service';
 import { InitialSchema1760410000000 } from '../../database/migrations/1760410000000-InitialSchema';
 import { LegacyStaging1791970000000 } from '../../database/migrations/1791970000000-LegacyStaging';
 async function main() {
-  const baseline = await readSnapshot('');
-  console.log('Read XLSX snapshot:', baseline.rows.length);
   const live = await readSnapshot();
   console.log('Read comparison snapshot:', live.rows.length);
   const db = new PGlite();
@@ -40,7 +38,6 @@ async function main() {
     await new LegacyStaging1791970000000().up(q);
     const service = new IngestionService({ createQueryRunner: () => q } as unknown as DataSource);
     for (const [name, snapshot] of [
-      ['baseline', baseline],
       ['live', live],
       ['replay', live],
     ] as const) {

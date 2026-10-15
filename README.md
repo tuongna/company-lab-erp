@@ -99,8 +99,6 @@ pnpm legacy:check-sheets
 # Synchronize directly from Google Sheets
 pnpm db:seed
 
-# (Optional fallback) Ingest from legacy Excel file
-pnpm db:seed:excel
 ```
 
 ### 5. Start Development
@@ -138,7 +136,6 @@ pnpm dev
 | `pnpm db:down`             | Stop local PostgreSQL container                        |
 | `pnpm db:migrate`          | Run TypeORM migrations in `apps/api`                   |
 | `pnpm db:seed`             | Synchronize data from Google Sheets into PostgreSQL    |
-| `pnpm db:seed:excel`       | (Fallback) Ingest legacy Excel sample data into DB     |
 | `pnpm legacy:check-sheets` | Validate Google Sheets API connection and read access  |
 | `pnpm legacy:sync-sheets`  | Run Google Sheets synchronization pipeline             |
 
@@ -180,8 +177,8 @@ pnpm db:migrate
 pnpm sync:run
 ```
 
-Configure `apps/api/.env` using `.env.example`. The default source for
-`sync:run` is Google Sheets. `db:seed` reads Google Sheets; `db:seed:excel` is the explicit XLSX fallback.
+Configure `apps/api/.env` using `.env.example`. Google Sheets is the only
+supported sync source for `sync:run` and `db:seed`.
 All commands use the same staging,
 validation and atomic promotion pipeline. The application never writes back
 to Google Sheets in this phase. API transitions return HTTP 403, including

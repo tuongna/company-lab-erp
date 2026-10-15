@@ -60,3 +60,10 @@ and sparse XLSX rows. The CI workflow additionally uses an actual PostgreSQL
 The live data chunks are transient verification inputs, not committed data
 or a new source of truth. Enterprise tabs outside the five IT tables are
 not yet imported or modified by this change.
+
+## Follow-up: Sheets-only ingestion
+
+At the owner's request, the Excel adapter, import commands and parser dependencies
+were removed after the above migration comparison. Those results document the
+historical verification, not an available fallback. The profiling harness now
+imports a Sheets snapshot and replays it; sparse-row coverage uses source fixtures.

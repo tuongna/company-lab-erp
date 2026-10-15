@@ -127,35 +127,14 @@ describe('Staging and promotion (PostgreSQL engine)', () => {
       ),
     ).rejects.toMatchObject({ code: '23505' });
   });
-  it('imports sparse Excel rows through the same pipeline', async () => {
-    const { Workbook } = await import('exceljs');
-    const { mkdtemp, rm } = await import('fs/promises');
-    const { tmpdir } = await import('os');
-    const { join } = await import('path');
-    const { HEADERS, SHEETS } = await import('./source');
-    const { XlsxFileSource } = await import('./sources/xlsx.source');
-    const dir = await mkdtemp(join(tmpdir(), 'companylab-'));
-    try {
-      const wb = new Workbook();
-      const f = fixture();
-      for (const name of SHEETS) {
-        const sheet = wb.addWorksheet(name);
-        sheet.addRow([...HEADERS[name]]);
-        let n = 3;
-        for (const row of f.rows.filter((r) => r.sheet === name))
-          sheet.getRow(n++).values = HEADERS[name].map((h) => row.raw[h] ?? null);
-      }
-      const file = join(dir, 'fixture.xlsx');
-      await wb.xlsx.writeFile(file);
-      const result = await service.run(new XlsxFileSource(file));
-      expect(result).toMatchObject({ status: 'COMPLETED', upserted: 5 });
-      expect(
-        (await db.query('SELECT min(row_number)::int AS n FROM legacy_sync.staging_employees'))
-          .rows,
-      ).toEqual([{ n: 3 }]);
-    } finally {
-      await rm(dir, { recursive: true });
-    }
+  it('preserves sparse source row numbers in staging', async () => {
+    const snapshot = fixture();
+    for (const row of snapshot.rows) row.rowNumber += 1;
+    const result = await service.run(source(snapshot));
+    expect(result).toMatchObject({ status: 'COMPLETED', upserted: 5 });
+    expect(
+      (await db.query('SELECT min(row_number)::int AS n FROM legacy_sync.staging_employees')).rows,
+    ).toEqual([{ n: 3 }]);
   });
   it('atomically updates request status with newly appended history', async () => {
     const f = fixture();
