@@ -10,7 +10,7 @@ First module: **IT Asset Allocation** (laptop allocation, return, repair).
 | Layer / Component    | Technology                               | Version / Spec                                            |
 | :------------------- | :--------------------------------------- | :-------------------------------------------------------- |
 | **Runtime**          | Node.js                                  | `>= 20.0.0` (codified in `.nvmrc` and `engines`)          |
-| **Package Manager**  | pnpm                                     | `10.33.0` (pinned via `packageManager`)                   |
+| **Package Manager**  | pnpm                                     | `12.11.2` (pinned via `packageManager`)                   |
 | **Monorepo Tool**    | Turborepo                                | `^2.4.4`                                                  |
 | **Backend**          | NestJS, TypeScript, TypeORM              | Nest 10, TS 5.7                                           |
 | **Frontend**         | Next.js (App Router), React, TailwindCSS | Next 15, React 19                                         |
@@ -44,7 +44,7 @@ First module: **IT Asset Allocation** (laptop allocation, return, repair).
 ### 1. Prerequisites
 
 - **Node.js**: `>= 20.0.0` (run `nvm use` if using NVM).
-- **pnpm**: `pnpm@10.33.0` (enable via `corepack enable`).
+- **pnpm**: `pnpm@12.11.2` (enable via `corepack enable`).
 - **Docker**: Docker Desktop / Docker Engine for PostgreSQL.
 
 ### 2. Installation
@@ -99,8 +99,6 @@ pnpm legacy:check-sheets
 # Synchronize directly from Google Sheets
 pnpm db:seed
 
-# (Optional fallback) Ingest from legacy Excel file
-pnpm db:seed:excel
 ```
 
 ### 5. Start Development
@@ -138,7 +136,6 @@ pnpm dev
 | `pnpm db:down`             | Stop local PostgreSQL container                        |
 | `pnpm db:migrate`          | Run TypeORM migrations in `apps/api`                   |
 | `pnpm db:seed`             | Synchronize data from Google Sheets into PostgreSQL    |
-| `pnpm db:seed:excel`       | (Fallback) Ingest legacy Excel sample data into DB     |
 | `pnpm legacy:check-sheets` | Validate Google Sheets API connection and read access  |
 | `pnpm legacy:sync-sheets`  | Run Google Sheets synchronization pipeline             |
 
@@ -168,3 +165,22 @@ pnpm dev
 | 5. Web (write) + flip   | Firebase Auth, actions, outbox write-back to Sheets                       | Zero reconciliation diff for N days             |
 | 6. GCP                  | Dockerfiles, GitHub Actions, Cloud Run (api, web, sync job), Cloud SQL    | Deploy on merge to `main`                       |
 | 7. Analytics (optional) | Datastream CDC → BigQuery                                                 | Dashboard on BigQuery                           |
+
+## Live Google Sheets ingestion (shadow mode)
+
+See [the live sync runbook](docs/runbooks/live-sheets-sync.md) for credential
+setup, spreadsheet access, execution, reconciliation and recovery.
+
+```bash
+pnpm --filter @companylab/contracts build
+pnpm db:migrate
+pnpm sync:run
+```
+
+Configure `apps/api/.env` using `.env.example`. Google Sheets is the only
+supported sync source for `sync:run` and `db:seed`.
+All commands use the same staging,
+validation and atomic promotion pipeline. The application never writes back
+to Google Sheets in this phase. API transitions return HTTP 403, including
+requests supplying forged actor headers. Firebase authentication and phase-B
+outbox are still future work, not an enabled feature of this release.

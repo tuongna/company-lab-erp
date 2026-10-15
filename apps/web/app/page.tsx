@@ -114,6 +114,34 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-8 mt-6 space-y-6">
+        <div className="rounded-lg border bg-white p-4 text-sm" aria-live="polite">
+          {statsQuery.isError ? (
+            <p role="alert">Cannot load data. Check the API connection and try Refresh.</p>
+          ) : statsQuery.data ? (
+            <>
+              <p className="break-all">Source: {statsQuery.data.legacySource}</p>
+              <p>
+                Latest sync: {statsQuery.data.lastSync?.status ?? 'NOT RUN'}
+                {' · '}
+                {statsQuery.data.lastSync?.finished_at
+                  ? new Date(statsQuery.data.lastSync.finished_at).toLocaleString('vi-VN', {
+                      timeZone: 'Asia/Ho_Chi_Minh',
+                    })
+                  : 'No completed sync yet'}
+              </p>
+              {statsQuery.data.lastSync && statsQuery.data.lastSync.status !== 'COMPLETED' && (
+                <p role="alert" className="text-amber-800">
+                  Sync has not completed successfully. Metrics show the last accepted snapshot.
+                </p>
+              )}
+              <p className="text-xs text-slate-500">
+                Refresh reloads imported data. Google Sheets is updated by the separate sync job.
+              </p>
+            </>
+          ) : (
+            <p>Loading sync status...</p>
+          )}
+        </div>
         {/* Metric Cards */}
         <MetricCards stats={statsQuery.data || null} loading={statsQuery.isLoading} />
 

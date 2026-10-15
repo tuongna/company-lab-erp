@@ -14,6 +14,12 @@ export class SyncRunEntity {
   @Column({ type: 'text', default: 'RUNNING' })
   status!: string;
 
+  @Column({ type: 'text', nullable: true })
+  source!: string | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  extractedAt!: Date | null;
+
   @Column({ type: 'integer', default: 0 })
   sourceRows!: number;
 
@@ -27,7 +33,7 @@ export class SyncRunEntity {
   quarantined!: number;
 
   @Column({ type: 'jsonb', nullable: true })
-  metrics!: Record<string, any> | null;
+  metrics!: Record<string, unknown> | null;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
@@ -54,8 +60,11 @@ export class QuarantineEntity {
   @Column({ type: 'text' })
   reason!: string;
 
+  @Column({ type: 'text', nullable: true })
+  detail!: string | null;
+
   @Column({ type: 'jsonb' })
-  raw!: Record<string, any>;
+  raw!: Record<string, unknown>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;

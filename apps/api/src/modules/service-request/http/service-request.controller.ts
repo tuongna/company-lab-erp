@@ -5,15 +5,14 @@ import {
   Body,
   Param,
   Query,
-  Headers,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ServiceRequestService } from '../application/service-request.service';
 import { TransitionService } from '../application/transition.service';
 import { RequestQueryDto } from './dto/request-query.dto';
 import { TransitionRequestHttpDto } from './dto/transition-request.dto';
-import { UserRole } from '@companylab/contracts';
 
 @ApiTags('Service Requests')
 @Controller('api/requests')
@@ -44,24 +43,12 @@ export class ServiceRequestController {
   }
 
   @Post(':id/transition')
-  @ApiOperation({ summary: 'Perform atomic FSM state transition (ADR-0003)' })
-  @ApiHeader({ name: 'x-actor-id', required: false, description: 'Current operator / actor UUID' })
-  @ApiHeader({
-    name: 'x-actor-role',
-    required: false,
-    enum: UserRole,
-    description: 'Role of actor',
+  @ApiOperation({
+    summary: 'Disabled during shadow migration; authenticated writes require a later cutover',
   })
-  async transition(
-    @Param('id') id: string,
-    @Body() dto: TransitionRequestHttpDto,
-    @Headers('x-actor-id') actorId?: string,
-    @Headers('x-actor-role') actorRole?: UserRole,
-  ) {
-    // In dev / shadow mode, default to OPERATOR/ADMIN if headers not provided
-    const effectiveActorId = actorId || '00000000-0000-0000-0000-000000000000';
-    const effectiveRole = actorRole || UserRole.OPERATOR;
-
-    return this.transitionService.transition(id, dto, effectiveActorId, effectiveRole);
+  async transition(@Param('id') _id: string, @Body() _dto: TransitionRequestHttpDto) {
+    // Fail closed even if a caller forges actor headers or changes LEGACY_PHASE.
+    // Re-enable only with verified Firebase identity, DB roles and phase-B outbox.
+    throw new ForbiddenException('READ_ONLY_SHADOW: update the legacy Google Sheet instead');
   }
 }

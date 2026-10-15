@@ -18,13 +18,13 @@
     "db:down": "docker compose -f infra/docker-compose.yml down",
     "db:migrate": "pnpm --filter @companylab/api db:migrate",
     "db:seed": "pnpm --filter @companylab/api db:seed",
-    "db:seed:excel": "pnpm --filter @companylab/api db:seed:excel",
     "legacy:sync-sheets": "pnpm --filter @companylab/api db:seed",
     "legacy:check-sheets": "pnpm --filter @companylab/api exec ts-node src/modules/legacy-sync/scripts/test-google-sheets.ts",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "graph": "turbo run build --graph=docs/architecture/task-graph.html",
-    "prepare": "husky"
+    "prepare": "husky",
+    "sync:run": "pnpm --filter @companylab/api sync:run"
   },
   "devDependencies": {
     "husky": "^9.1.7",

@@ -40,9 +40,10 @@ export class TransitionService {
     return this.dataSource.transaction(async (em: EntityManager) => {
       // 1. Lock request row FOR UPDATE (Pessimistic write lock)
       const request = await em.findOne(ServiceRequestEntity, {
-        where: [{ id: requestId }, { legacyId: requestId }],
+        where: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestId)
+          ? [{ id: requestId }, { legacyId: requestId }]
+          : { legacyId: requestId },
         lock: { mode: 'pessimistic_write' },
-        relations: ['employee', 'asset'],
       });
 
       if (!request) {
@@ -65,6 +66,9 @@ export class TransitionService {
         );
       }
 
+      if (actorRole === UserRole.EMPLOYEE && actorId !== request.employeeId) {
+        throw new ConflictException('Employees can only act on their own requests');
+      }
       const fromStatus = request.status;
 
       // 4. Guards & Side Effects per request type (ADR-0003)
@@ -104,8 +108,9 @@ export class TransitionService {
           }
 
           if (
-            asset.status !== AssetStatus.AVAILABLE &&
-            asset.holderEmployeeId !== request.employeeId
+            asset.type !== AssetType.LAPTOP ||
+            asset.status !== AssetStatus.AVAILABLE ||
+            asset.holderEmployeeId !== null
           ) {
             throw new ConflictException(
               `Asset ${asset.model} is not available (current status: ${asset.status})`,
@@ -118,19 +123,22 @@ export class TransitionService {
 
           request.assetId = asset.id;
         } else if (request.requestType === ServiceRequestType.RETURN) {
-          // Release asset on completion
-          if (request.assetId) {
-            const asset = await em.findOne(AssetEntity, {
-              where: { id: request.assetId },
-              lock: { mode: 'pessimistic_write' },
-            });
-
-            if (asset) {
-              asset.status = AssetStatus.AVAILABLE;
-              asset.holderEmployeeId = null;
-              await em.save(AssetEntity, asset);
-            }
+          if (!request.assetId) throw new BadRequestException('Return requires an assigned laptop');
+          const asset = await em.findOne(AssetEntity, {
+            where: { id: request.assetId },
+            lock: { mode: 'pessimistic_write' },
+          });
+          if (
+            !asset ||
+            asset.type !== AssetType.LAPTOP ||
+            asset.status !== AssetStatus.ASSIGNED ||
+            asset.holderEmployeeId !== request.employeeId
+          ) {
+            throw new ConflictException('Return asset must be held by the requester');
           }
+          asset.status = AssetStatus.AVAILABLE;
+          asset.holderEmployeeId = null;
+          await em.save(AssetEntity, asset);
         }
       }
 
