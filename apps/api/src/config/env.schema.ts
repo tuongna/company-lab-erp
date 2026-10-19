@@ -13,6 +13,12 @@ export const envSchema = z.object({
   LEGACY_PHASE: z.string().optional(),
   LEGACY_SPREADSHEET_ID: z.string().optional(),
   GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
+  FIREBASE_PROJECT_ID: z.string().optional(),
+  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
+  AUTH_DEV_MODE: z
+    .string()
+    .transform((v) => v === 'true' || v === '1')
+    .optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
