@@ -16,8 +16,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { useTranslation } from '@/lib/i18n/context';
 
 export function ITServiceView({ toast }: { toast: (s: string) => void }) {
+  const { t, locale } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState('');
@@ -53,7 +55,7 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
 
   const handleRefresh = async () => {
     await queryClient.invalidateQueries();
-    toast('Dữ liệu đã được cập nhật từ database');
+    toast(t.common.refreshData);
   };
 
   const handleStatusChange = (newStatus: string) => {
@@ -74,51 +76,53 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
   const totalPages = requestsQuery.data?.totalPages || 1;
   const isRefreshing = statsQuery.isFetching || requestsQuery.isFetching;
 
+  const dateLocaleStr = locale === 'ko' ? 'ko-KR' : locale === 'en' ? 'en-US' : 'vi-VN';
+
   return (
     <div className="space-y-4">
       {/* Read-only notice (ADR-0001 Shadow Phase) */}
-      <div className="bg-amber-500/10 border border-amber-500/20 px-4 py-2.5 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between">
+      <div className="flex items-center justify-between rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-800 dark:text-amber-300">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <ShieldAlert className="h-4 w-4 shrink-0 text-amber-800 dark:text-amber-300" />
           <span>
-            <strong>GIAI ĐOẠN A (SHADOW RUN — CHỈ ĐỌC):</strong> Hệ thống đang chạy song song và lấy
-            dữ liệu đồng bộ từ Google Sheets qua Service Account API.
+            <strong>{t.common.readOnlyBadge}:</strong> {t.common.readOnlyNotice}
           </span>
         </div>
-        <span className="font-mono bg-amber-200/50 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded font-semibold text-[11px]">
-          MODE: READ-ONLY
+        <span className="rounded bg-amber-200/50 px-2 py-0.5 font-mono text-sm font-semibold text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
+          READ-ONLY
         </span>
       </div>
 
       <PageHeader
-        title="IT Asset Operations"
-        subtitle="Quản lý quy trình cấp phát, đổi trả & sửa chữa Laptop / Thiết bị CNTT"
+        title={t.itService.title}
+        subtitle={t.itService.subtitle}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={handleRefresh} disabled={isRefreshing}>
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Làm mới dữ liệu
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {t.common.refreshData}
             </Button>
-            <Button onClick={() => toast('Báo cáo tài sản IT đã được tải')}>
-              <Download size={14} /> Xuất báo cáo
+            <Button onClick={() => toast(t.common.exportReport)}>
+              <Download size={14} /> {t.common.exportReport}
             </Button>
           </div>
         }
       />
 
       {/* Sync Status Banner */}
-      <Card className="p-3.5 text-xs text-foreground flex items-center justify-between">
+      <Card className="flex items-center justify-between p-3.5 text-xs text-foreground">
         <div>
-          <span className="font-semibold block">
-            Nguồn đồng bộ: {statsQuery.data?.legacySource || 'Google Sheets Service Account'}
+          <span className="block font-semibold">
+            {t.itService.syncSource}:{' '}
+            {statsQuery.data?.legacySource || 'Google Sheets Service Account'}
           </span>
-          <p className="text-muted text-[11px]">
-            Lần hoàn thành gần nhất:{' '}
+          <p className="text-sm text-muted">
+            {t.common.lastSync}:{' '}
             {statsQuery.data?.lastSync?.finished_at
-              ? new Date(statsQuery.data.lastSync.finished_at).toLocaleString('vi-VN', {
+              ? new Date(statsQuery.data.lastSync.finished_at).toLocaleString(dateLocaleStr, {
                   timeZone: 'Asia/Ho_Chi_Minh',
                 })
-              : 'Chưa có lượt chạy'}
+              : t.common.noData}
           </p>
         </div>
         <Badge tone={statsQuery.data?.lastSync?.status === 'COMPLETED' ? 'success' : 'warning'}>
@@ -130,8 +134,8 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
       <MetricCards stats={statsQuery.data || null} loading={statsQuery.isLoading} />
 
       {/* Request Table & Timeline layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-surface rounded-xl border border-border shadow-xs overflow-hidden flex flex-col">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="shadow-xs flex flex-col overflow-hidden rounded-xl border border-border bg-surface lg:col-span-2">
           <RequestFilters
             status={statusFilter}
             type={typeFilter}

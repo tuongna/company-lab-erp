@@ -5,16 +5,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { useTranslation } from '@/lib/i18n/context';
 
 export function ProjectDetail({ project, close }: { project: ProjectItem; close: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <Button
         variant="ghost"
         onClick={close}
-        className="text-primary hover:text-primary-hover -ml-2"
+        className="-ml-2 text-primary hover:text-primary-hover"
       >
-        <ChevronLeft size={16} /> Back to projects
+        <ChevronLeft size={16} /> ← {t.navigation.projects}
       </Button>
       <PageHeader
         title={project.name}
@@ -22,59 +25,63 @@ export function ProjectDetail({ project, close }: { project: ProjectItem; close:
         actions={
           <>
             <Badge tone={project.tone}>{project.status}</Badge>
-            <Button variant="secondary">Edit project</Button>
-            <Button variant="ghost">
+            <Button variant="secondary">{t.common.edit}</Button>
+            <Button variant="ghost" aria-label={`${t.common.moreOptions}: ${project.name}`}>
               <MoreHorizontal size={15} />
             </Button>
           </>
         }
       />
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-surface border border-border rounded-xl">
+      <div className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-surface p-4 sm:grid-cols-4">
         <div>
-          <small className="block text-[10px] uppercase font-bold text-muted">
-            PROJECT MANAGER
+          <small className="block text-sm font-bold uppercase text-muted">
+            {t.projects.manager}
           </small>
-          <b className="text-xs font-semibold text-foreground">{project.manager}</b>
+          <b className="text-sm font-semibold text-foreground">{project.manager}</b>
         </div>
         <div>
-          <small className="block text-[10px] uppercase font-bold text-muted">CONTRACT REF</small>
-          <b className="text-xs font-semibold text-foreground">CTR-2026-041</b>
+          <small className="block text-sm font-bold uppercase text-muted">CONTRACT REF</small>
+          <b className="text-sm font-semibold text-foreground">CTR-2026-041</b>
         </div>
         <div>
-          <small className="block text-[10px] uppercase font-bold text-muted">TARGET DATE</small>
-          <b className="text-xs font-semibold text-foreground">{project.due}</b>
+          <small className="block text-sm font-bold uppercase text-muted">
+            {t.projects.targetDate}
+          </small>
+          <b className="text-sm font-semibold text-foreground">{project.due}</b>
         </div>
         <div>
-          <small className="block text-[10px] uppercase font-bold text-muted">BUDGET</small>
-          <b className="text-xs font-semibold text-foreground">{project.budget}</b>
+          <small className="block text-sm font-bold uppercase text-muted">
+            {t.projects.budget}
+          </small>
+          <b className="text-sm font-semibold text-foreground">{project.budget}</b>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 p-4 space-y-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card className="space-y-3 p-4 lg:col-span-2">
           <h2 className="text-sm font-bold text-foreground">Delivery health</h2>
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs space-y-1">
+          <div className="space-y-1 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-sm">
             <Badge tone="warning">Risk</Badge>
-            <strong className="block text-foreground mt-1">UAT completion is behind plan</strong>
+            <strong className="mt-1 block text-foreground">UAT completion is behind plan</strong>
             <p className="text-muted">
               Client testers have completed 68% of test cases. Two critical workflows remain
               unverified.
             </p>
-            <span className="text-[10px] text-muted-foreground block">
+            <span className="block text-sm text-muted-foreground">
               Owner: {project.manager} · Review by 16 Oct
             </span>
           </div>
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-xs space-y-1">
+          <div className="space-y-1 rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-sm">
             <Badge tone="danger">Blocker</Badge>
-            <strong className="block text-foreground mt-1">Production credentials pending</strong>
+            <strong className="mt-1 block text-foreground">Production credentials pending</strong>
             <p className="text-muted">
               Client security team approval is required before deployment rehearsal.
             </p>
-            <span className="text-[10px] text-muted-foreground block">
+            <span className="block text-sm text-muted-foreground">
               Owner: Northstar IT · Due 15 Oct
             </span>
           </div>
         </Card>
-        <Card className="p-4 space-y-3">
+        <Card className="space-y-3 p-4">
           <h2 className="text-sm font-bold text-foreground">Financial summary</h2>
           <div className="space-y-2 text-xs">
             {[
@@ -83,7 +90,7 @@ export function ProjectDetail({ project, close }: { project: ProjectItem; close:
               ['Invoiced amount', '₫1.18B'],
               ['Cash received', '₫720M'],
             ].map((x) => (
-              <div key={x[0]} className="flex justify-between py-1 border-b border-border">
+              <div key={x[0]} className="flex justify-between border-b border-border py-1">
                 <span className="text-muted">{x[0]}</span>
                 <b className="font-mono text-foreground">{x[1]}</b>
               </div>

@@ -15,8 +15,9 @@ import {
   WalletCards,
   type LucideIcon,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export const icons: Record<string, LucideIcon> = {
+const icons: Record<string, LucideIcon> = {
   Overview: LayoutDashboard,
   Projects: FolderKanban,
   People: Users,
@@ -33,15 +34,15 @@ export const icons: Record<string, LucideIcon> = {
   plus: Plus,
 };
 
-export function Icon({
-  name,
-  size = 18,
-  className = '',
-}: {
+export interface IconProps {
   name: string;
   size?: number;
   className?: string;
-}) {
+}
+
+export function Icon({ name, size = 18, className }: IconProps) {
   const IconComponent = icons[name] ?? Plus;
-  return <IconComponent size={size} strokeWidth={1.8} aria-hidden="true" className={className} />;
+  return (
+    <IconComponent size={size} strokeWidth={1.8} aria-hidden="true" className={cn(className)} />
+  );
 }

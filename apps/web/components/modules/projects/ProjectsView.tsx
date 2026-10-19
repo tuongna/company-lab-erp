@@ -5,87 +5,110 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ProjectTable } from './ProjectTable';
+import { useTranslation } from '@/lib/i18n/context';
 
 export function ProjectsView({ onProject }: { onProject: (p: ProjectItem) => void }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [view, setView] = useState('All projects');
+  const [viewIndex, setViewIndex] = useState(0);
+
+  const tabs = [
+    { label: t.projects.allProjects, count: 12 },
+    { label: t.projects.myProjects },
+    { label: t.projects.atRisk },
+    { label: t.projects.archived },
+  ];
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Projects"
-        subtitle="12 active projects across 8 clients"
+        title={t.projects.title}
+        subtitle={t.projects.subtitle}
         actions={
           <Button>
-            <Plus size={14} /> Create project
+            <Plus size={14} /> {t.projects.createProject}
           </Button>
         }
       />
-      <div className="flex items-center gap-4 border-b border-border overflow-x-auto text-xs font-semibold">
-        {['All projects', 'My projects', 'At risk', 'Archived'].map((v) => (
+      <div className="flex items-center gap-4 overflow-x-auto border-b border-border text-xs font-semibold">
+        {tabs.map((tab, idx) => (
           <button
-            key={v}
-            className={`py-2 border-b-2 transition whitespace-nowrap ${
-              view === v
-                ? 'border-primary text-primary font-bold'
+            type="button"
+            key={tab.label}
+            className={`whitespace-nowrap border-b-2 py-2 transition ${
+              viewIndex === idx
+                ? 'border-primary font-bold text-primary'
                 : 'border-transparent text-muted hover:text-foreground'
             }`}
-            onClick={() => setView(v)}
+            onClick={() => setViewIndex(idx)}
           >
-            {v}{' '}
-            {v === 'All projects' && (
-              <span className="text-[10px] bg-muted/15 px-1.5 py-0.5 rounded-full ml-1">12</span>
+            {tab.label}{' '}
+            {tab.count !== undefined && (
+              <span className="ml-1 rounded-full bg-slate-500/15 px-2 py-0.5 text-sm text-slate-700 dark:text-slate-300">
+                {tab.count}
+              </span>
             )}
           </button>
         ))}
       </div>
       <Card className="overflow-hidden">
-        <div className="p-3 border-b border-border flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2 px-2.5 h-8 bg-surface-subtle border border-border rounded-lg w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-muted" />
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-3">
+          <div className="flex h-8 w-full items-center gap-2 rounded-lg border border-border bg-surface-subtle px-2.5 sm:w-64">
+            <Search className="h-3.5 w-3.5 text-muted" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search projects..."
-              className="bg-transparent border-0 outline-none text-xs text-foreground placeholder:text-muted w-full"
+              placeholder={t.projects.searchPlaceholder}
+              aria-label={t.projects.searchPlaceholder}
+              className="w-full border-0 bg-transparent text-xs text-foreground outline-none placeholder:text-muted"
             />
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary">
-              <span>Status</span>
+              <span>{t.common.status}</span>
               <ChevronDown size={14} className="text-muted" />
             </Button>
             <Button variant="secondary">
-              <span>Client</span>
+              <span>{t.projects.projectClient}</span>
               <ChevronDown size={14} className="text-muted" />
             </Button>
             <Button variant="secondary">
-              <span>Manager</span>
+              <span>{t.projects.manager}</span>
               <ChevronDown size={14} className="text-muted" />
             </Button>
             <Button variant="secondary">
-              <span>Department</span>
+              <span>{t.common.department}</span>
               <ChevronDown size={14} className="text-muted" />
             </Button>
           </div>
         </div>
         <ProjectTable full query={query} onRow={onProject} />
-        <div className="p-3 border-t border-border flex items-center justify-between text-xs text-muted">
+        <div className="flex items-center justify-between border-t border-border p-3 text-xs text-muted">
           <span>Showing 1–5 of 12 projects</span>
           <div className="flex items-center gap-1">
-            <Button variant="secondary" disabled className="w-7 h-7 p-0">
+            <Button
+              variant="secondary"
+              disabled
+              className="h-7 w-7 p-0"
+              aria-label={t.common.previousPage}
+            >
               <ChevronLeft size={13} className="shrink-0" />
             </Button>
-            <Button variant="primary" className="w-7 h-7 p-0 font-bold">
+            <Button
+              variant="primary"
+              className="h-7 w-7 p-0 font-bold"
+              aria-label={`${t.common.page} 1`}
+              aria-current="page"
+            >
               1
             </Button>
-            <Button variant="secondary" className="w-7 h-7 p-0">
+            <Button variant="secondary" className="h-7 w-7 p-0" aria-label={`${t.common.page} 2`}>
               2
             </Button>
-            <Button variant="secondary" className="w-7 h-7 p-0">
+            <Button variant="secondary" className="h-7 w-7 p-0" aria-label={`${t.common.page} 3`}>
               3
             </Button>
-            <Button variant="secondary" className="w-7 h-7 p-0">
+            <Button variant="secondary" className="h-7 w-7 p-0" aria-label={t.common.nextPage}>
               <ChevronRight size={13} className="shrink-0" />
             </Button>
           </div>
