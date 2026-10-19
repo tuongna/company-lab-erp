@@ -112,7 +112,7 @@ export function RequestTimeline({ request, loading }: RequestTimelineProps) {
             {request.history && request.history.length > 0 ? (
               request.history.map((h, i) => (
                 <div key={h.id || i} className="relative text-xs">
-                  <div className="shadow-xs absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 border-surface bg-primary" />
+                  <div className="shadow-xs absolute -left-[1.3125rem] top-1 h-3 w-3 rounded-full border-2 border-surface bg-primary" />
                   <div className="flex items-baseline justify-between">
                     <span className="font-bold text-foreground">
                       {getStatusLabel(h.toStatus as ServiceRequestStatus)}

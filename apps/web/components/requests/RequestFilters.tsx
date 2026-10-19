@@ -1,6 +1,7 @@
 import React from 'react';
 import { ServiceRequestStatus, ServiceRequestType } from '@companylab/contracts';
 import { useTranslation } from '@/lib/i18n/context';
+import { Select } from '@/components/ui/select';
 
 interface RequestFiltersProps {
   status: string;
@@ -21,39 +22,41 @@ export function RequestFilters({
 }: RequestFiltersProps) {
   const { t } = useTranslation();
 
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-subtle p-4 text-xs">
-      <div className="flex items-center gap-2">
-        <select
-          value={status}
-          onChange={(e) => onStatusChange(e.target.value)}
-          aria-label={t.itService.filterAllStatus}
-          suppressHydrationWarning
-          className="shadow-xs rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-          <option value="">{t.itService.filterAllStatus}</option>
-          <option value={ServiceRequestStatus.PENDING_APPROVAL}>
-            {t.itService.pendingApproval}
-          </option>
-          <option value={ServiceRequestStatus.APPROVED}>{t.itService.statusApproved}</option>
-          <option value={ServiceRequestStatus.IN_PROGRESS}>{t.itService.inProgress}</option>
-          <option value={ServiceRequestStatus.COMPLETED}>{t.itService.statusCompleted}</option>
-          <option value={ServiceRequestStatus.REJECTED}>{t.itService.statusRejected}</option>
-          <option value={ServiceRequestStatus.CANCELLED}>{t.itService.statusCancelled}</option>
-        </select>
+  const statusOptions = [
+    { value: '', label: t.itService.filterAllStatus },
+    { value: ServiceRequestStatus.PENDING_APPROVAL, label: t.itService.pendingApproval },
+    { value: ServiceRequestStatus.APPROVED, label: t.itService.statusApproved },
+    { value: ServiceRequestStatus.IN_PROGRESS, label: t.itService.inProgress },
+    { value: ServiceRequestStatus.COMPLETED, label: t.itService.statusCompleted },
+    { value: ServiceRequestStatus.REJECTED, label: t.itService.statusRejected },
+    { value: ServiceRequestStatus.CANCELLED, label: t.itService.statusCancelled },
+  ];
 
-        <select
+  const typeOptions = [
+    { value: '', label: t.itService.filterAllTypes },
+    { value: ServiceRequestType.ALLOCATION, label: t.itService.typeAllocation },
+    { value: ServiceRequestType.RETURN, label: t.itService.typeReturn },
+    { value: ServiceRequestType.REPAIR, label: t.itService.typeRepair },
+  ];
+
+  return (
+    <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-t-xl border-b border-border bg-surface-subtle p-4 text-xs">
+      <div className="flex items-center gap-2">
+        <Select
+          value={status}
+          onChange={onStatusChange}
+          options={statusOptions}
+          ariaLabel={t.itService.filterAllStatus}
+          triggerClassName="min-w-[130px]"
+        />
+
+        <Select
           value={type}
-          onChange={(e) => onTypeChange(e.target.value)}
-          aria-label={t.itService.filterAllTypes}
-          suppressHydrationWarning
-          className="shadow-xs rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-          <option value="">{t.itService.filterAllTypes}</option>
-          <option value={ServiceRequestType.ALLOCATION}>{t.itService.typeAllocation}</option>
-          <option value={ServiceRequestType.RETURN}>{t.itService.typeReturn}</option>
-          <option value={ServiceRequestType.REPAIR}>{t.itService.typeRepair}</option>
-        </select>
+          onChange={onTypeChange}
+          options={typeOptions}
+          ariaLabel={t.itService.filterAllTypes}
+          triggerClassName="min-w-[130px]"
+        />
       </div>
 
       <span className="text-xs text-muted">

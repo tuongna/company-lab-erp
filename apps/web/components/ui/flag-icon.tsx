@@ -7,13 +7,13 @@ import { Locale } from '@/lib/i18n/types';
 import { cn } from '@/lib/utils';
 
 export const flagIconVariants = cva(
-  'rounded-[2px] overflow-hidden shrink-0 border border-black/10 dark:border-white/15 shadow-2xs',
+  'shadow-2xs shrink-0 overflow-hidden rounded-[0.125rem] border border-black/10 dark:border-white/15',
   {
     variants: {
       size: {
-        sm: 'w-[15px] h-[10px]',
-        md: 'w-[18px] h-[12px]',
-        lg: 'w-[24px] h-[16px]',
+        sm: 'h-[0.625rem] w-[0.9375rem]',
+        md: 'h-[0.75rem] w-[1.125rem]',
+        lg: 'h-4 w-6',
       },
     },
     defaultVariants: {
@@ -23,23 +23,30 @@ export const flagIconVariants = cva(
 );
 
 export interface FlagIconProps
-  extends React.ComponentPropsWithoutRef<typeof VN>, VariantProps<typeof flagIconVariants> {
+  extends React.SVGProps<SVGSVGElement>, VariantProps<typeof flagIconVariants> {
   code: Locale | string;
 }
 
-const flagComponents: Record<string, typeof VN> = {
-  vi: VN,
-  en: US,
-  ko: KR,
+const flagComponents: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  vi: VN as unknown as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+  en: US as unknown as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+  ko: KR as unknown as React.ComponentType<React.SVGProps<SVGSVGElement>>,
 };
 
-export function FlagIcon({ code, size, className, ...props }: FlagIconProps) {
+export function FlagIcon({
+  code,
+  size,
+  className,
+  preserveAspectRatio = 'none',
+  ...props
+}: FlagIconProps) {
   const Component = flagComponents[code];
   if (!Component) return null;
 
   return (
     <Component
       aria-hidden="true"
+      preserveAspectRatio={preserveAspectRatio}
       className={cn(flagIconVariants({ size }), className)}
       {...props}
     />

@@ -3,6 +3,14 @@ import { ChevronRight } from 'lucide-react';
 import { ServiceRequestItem, ServiceRequestType } from '@companylab/contracts';
 import { RequestStatusBadge } from './RequestStatusBadge';
 import { useTranslation } from '@/lib/i18n/context';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface RequestTableProps {
   items: ServiceRequestItem[];
@@ -40,19 +48,19 @@ export function RequestTable({
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex-1 overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-border bg-surface-subtle text-sm font-semibold uppercase text-muted">
+      <div className="relative flex-1 overflow-x-auto">
+        <Table>
+          <TableHeader>
             <tr>
-              <th className="px-4 py-3">{t.itService.colCode}</th>
-              <th className="px-4 py-3">{t.itService.colType}</th>
-              <th className="px-4 py-3">{t.itService.colEmployee}</th>
-              <th className="px-4 py-3">{t.itService.colStatus}</th>
-              <th className="px-4 py-3">{t.itService.colAsset}</th>
-              <th className="px-4 py-3 text-right">{t.itService.colDetails}</th>
+              <TableHead preset="code">{t.itService.colCode}</TableHead>
+              <TableHead preset="badge">{t.itService.colType}</TableHead>
+              <TableHead preset="person">{t.itService.colEmployee}</TableHead>
+              <TableHead preset="badge">{t.itService.colStatus}</TableHead>
+              <TableHead preset="content">{t.itService.colAsset}</TableHead>
+              <TableHead preset="actions">{t.itService.colDetails}</TableHead>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
+          </TableHeader>
+          <TableBody>
             {loading && items.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-10 text-center text-muted">
@@ -67,41 +75,39 @@ export function RequestTable({
               </tr>
             ) : (
               items.map((r) => (
-                <tr
+                <TableRow
                   key={r.id}
                   onClick={() => onSelect(r)}
-                  className={`cursor-pointer transition hover:bg-surface-subtle ${
-                    selectedId === r.id ? 'bg-primary/10' : ''
-                  }`}
+                  className={`cursor-pointer ${selectedId === r.id ? 'bg-primary/10' : ''}`}
                 >
-                  <td className="px-4 py-3 font-mono font-medium text-foreground">
+                  <TableCell preset="code" className="text-foreground">
                     {r.legacyId || r.id.slice(0, 8)}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-foreground">
+                  </TableCell>
+                  <TableCell preset="badge" className="font-medium text-foreground">
                     {getTypeText(r.requestType)}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell preset="person">
                     <div className="font-medium text-foreground">{r.employee?.name || '—'}</div>
                     <div className="text-sm text-muted">{r.employee?.department}</div>
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell preset="badge">
                     <RequestStatusBadge status={r.status} />
-                  </td>
-                  <td className="px-4 py-3 text-muted">
+                  </TableCell>
+                  <TableCell preset="content" className="text-muted">
                     {r.asset ? `${r.asset.model} (${r.asset.legacyId || 'No Code'})` : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right">
+                  </TableCell>
+                  <TableCell preset="actions">
                     <ChevronRight className="inline h-4 w-4 text-muted" />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between border-t border-border bg-surface-subtle p-3 text-xs">
+      <div className="flex items-center justify-between rounded-b-xl border-t border-border bg-surface-subtle p-3 text-xs">
         <button
           type="button"
           disabled={page <= 1 || loading}

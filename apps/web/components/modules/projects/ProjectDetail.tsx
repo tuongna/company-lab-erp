@@ -17,7 +17,8 @@ export function ProjectDetail({ project, close }: { project: ProjectItem; close:
         onClick={close}
         className="-ml-2 text-primary hover:text-primary-hover"
       >
-        <ChevronLeft size={16} /> ← {t.navigation.projects}
+        <ChevronLeft size={16} />
+        {t.navigation.projects}
       </Button>
       <PageHeader
         title={project.name}

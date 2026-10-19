@@ -5,6 +5,14 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n/context';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export function ProjectTable({
   full = false,
@@ -22,72 +30,82 @@ export function ProjectTable({
   );
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead className="border-b border-border bg-surface-subtle text-sm font-semibold uppercase text-muted">
+    <div className="relative w-full overflow-x-auto">
+      <Table>
+        <TableHeader>
           <tr>
             {full && (
-              <th className="px-3 py-2.5">
+              <TableHead preset="selection">
                 <input type="checkbox" aria-label={t.a11y.selectAll} className="rounded" />
-              </th>
+              </TableHead>
             )}
-            {full && <th className="px-3 py-2.5">{t.projects.projectCode}</th>}
-            <th className="px-3 py-2.5">{t.projects.projectClient}</th>
-            <th className="px-3 py-2.5">{t.projects.manager}</th>
-            <th className="px-3 py-2.5">{t.common.status}</th>
-            {!full && <th className="px-3 py-2.5">{t.projects.nextMilestone}</th>}
-            <th className="px-3 py-2.5">{t.projects.targetDate}</th>
-            {full && <th className="px-3 py-2.5 text-right">{t.projects.budget}</th>}
-            <th className="px-3 py-2.5 text-right">{t.projects.allocation}</th>
-            <th className="px-3 py-2.5 text-right">
+            {full && <TableHead preset="code">{t.projects.projectCode}</TableHead>}
+            <TableHead preset="content">{t.projects.projectClient}</TableHead>
+            <TableHead preset="person">{t.projects.manager}</TableHead>
+            <TableHead preset="badge">{t.common.status}</TableHead>
+            {!full && <TableHead preset="content">{t.projects.nextMilestone}</TableHead>}
+            <TableHead preset="datetime">{t.projects.targetDate}</TableHead>
+            {full && <TableHead preset="numeric">{t.projects.budget}</TableHead>}
+            <TableHead preset="numeric">{t.projects.allocation}</TableHead>
+            <TableHead preset="actions">
               <span className="sr-only">{t.common.moreOptions}</span>
-            </th>
+            </TableHead>
           </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
+        </TableHeader>
+        <TableBody>
           {rows.map((p) => (
-            <tr
-              key={p.code}
-              onClick={() => onRow(p)}
-              className="cursor-pointer transition hover:bg-surface-subtle"
-            >
+            <TableRow key={p.code} onClick={() => onRow(p)} className="cursor-pointer">
               {full && (
-                <td className="px-3 py-2.5">
+                <TableCell preset="selection">
                   <input
                     type="checkbox"
                     aria-label={`${t.a11y.selectItem}: ${p.name}`}
                     onClick={(e) => e.stopPropagation()}
                     className="rounded"
                   />
-                </td>
+                </TableCell>
               )}
-              {full && <td className="px-3 py-2.5 font-mono text-muted">{p.code}</td>}
-              <td className="px-3 py-2.5">
+              {full && (
+                <TableCell preset="code" className="text-muted">
+                  {p.code}
+                </TableCell>
+              )}
+              <TableCell preset="content">
                 <div className="font-medium text-foreground transition hover:text-primary">
                   {p.name}
                 </div>
                 <div className="text-sm text-muted">{p.client}</div>
-              </td>
-              <td className="px-3 py-2.5">
+              </TableCell>
+              <TableCell preset="person">
                 <div className="flex items-center gap-2">
                   <Avatar
                     initials={p.manager
                       .split(' ')
                       .map((n) => n[0])
                       .join('')}
-                    className="h-7 w-7 text-sm"
+                    className="h-8 w-8 text-sm"
                   />
                   <span>{p.manager}</span>
                 </div>
-              </td>
-              <td className="px-3 py-2.5">
+              </TableCell>
+              <TableCell preset="badge">
                 <Badge tone={p.tone}>{p.status}</Badge>
-              </td>
-              {!full && <td className="px-3 py-2.5 text-muted">{p.milestone}</td>}
-              <td className="px-3 py-2.5 text-muted">{p.due}</td>
-              {full && <td className="px-3 py-2.5 text-right font-medium">{p.budget}</td>}
-              <td className="px-3 py-2.5 text-right font-semibold">{p.allocation}</td>
-              <td className="px-3 py-2.5 text-right">
+              </TableCell>
+              {!full && (
+                <TableCell preset="content" className="text-muted">
+                  {p.milestone}
+                </TableCell>
+              )}
+              <TableCell preset="datetime">{p.due}</TableCell>
+              {full && (
+                <TableCell preset="numeric" className="font-medium text-foreground">
+                  {p.budget}
+                </TableCell>
+              )}
+              <TableCell preset="numeric" className="font-semibold text-foreground">
+                {p.allocation}
+              </TableCell>
+              <TableCell preset="actions">
                 <Button
                   variant="ghost"
                   className="p-1"
@@ -95,11 +113,11 @@ export function ProjectTable({
                 >
                   <MoreHorizontal size={14} />
                 </Button>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       {rows.length === 0 && (
         <div className="space-y-2 py-12 text-center text-muted">
           <Search className="mx-auto h-8 w-8 text-muted-foreground opacity-50" />

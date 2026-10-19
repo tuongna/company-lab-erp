@@ -34,26 +34,30 @@ export function OverviewView({
         title={t.overview.title}
         subtitle="Wednesday, 14 October 2026"
         actions={
-          <>
-            <Button variant="secondary">
-              <Calendar size={14} className="text-muted" />
-              <span>Last 30 days</span>
-              <ChevronDown size={14} className="text-muted" />
-            </Button>
-            <Button variant="secondary">
-              <span>{t.common.allDepartments}</span>
-              <ChevronDown size={14} className="text-muted" />
-            </Button>
+          <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={() => toast(t.common.exportReport)}>
               <Download size={14} />
               <span>{t.common.exportReport}</span>
             </Button>
-            <Button variant="ghost" aria-label={t.common.moreOptions}>
+            <Button variant="ghost" size="icon" aria-label={t.common.moreOptions}>
               <MoreHorizontal size={15} />
             </Button>
-          </>
+          </div>
         }
       />
+
+      {/* Filters Toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button variant="secondary">
+          <Calendar size={14} className="text-muted" />
+          <span>Last 30 days</span>
+          <ChevronDown size={14} className="text-muted" />
+        </Button>
+        <Button variant="secondary">
+          <span>{t.common.allDepartments}</span>
+          <ChevronDown size={14} className="text-muted" />
+        </Button>
+      </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
