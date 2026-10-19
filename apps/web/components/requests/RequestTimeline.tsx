@@ -88,7 +88,7 @@ export function RequestTimeline({ request, loading }: RequestTimelineProps) {
                   </p>
                   {h.note && (
                     <p className="mt-1.5 p-2 bg-surface-subtle rounded-lg border border-border text-[11px] text-muted italic">
-                      "{h.note}"
+                      &ldquo;{h.note}&rdquo;
                     </p>
                   )}
                 </div>
