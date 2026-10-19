@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { AssetStatus, ServiceRequestStatus, ServiceRequestType } from '@companylab/contracts';
 import { ServiceRequestEntity } from '../domain/service-request.entity';
 import { RequestHistoryEntity } from '../domain/request-history.entity';
+import { byIdOrLegacyId } from '../../../common/utils/identifier.util';
 
 @Injectable()
 export class ServiceRequestService {
@@ -39,10 +41,7 @@ export class ServiceRequestService {
     const reqRepo = this.dataSource.getRepository(ServiceRequestEntity);
     const histRepo = this.dataSource.getRepository(RequestHistoryEntity);
 
-    // Only query UUID column if string matches UUID format to avoid Postgres 22P02 error
-    const isUuid =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-    const where = isUuid ? [{ id }, { legacyId: id }] : { legacyId: id };
+    const where = byIdOrLegacyId(id);
 
     const request = await reqRepo.findOne({
       where,
@@ -64,27 +63,42 @@ export class ServiceRequestService {
   }
 
   async getDashboardStats() {
-    const counts = await this.dataSource.query(`
+    const counts = await this.dataSource.query(
+      `
       SELECT
-        COUNT(*) AS total_requests,
-        COUNT(*) FILTER (WHERE status = 'PENDING_APPROVAL') AS pending_approval,
-        COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') AS in_progress,
-        COUNT(*) FILTER (WHERE status = 'COMPLETED') AS completed,
-        COUNT(*) FILTER (WHERE status = 'REJECTED') AS rejected,
-        COUNT(*) FILTER (WHERE status = 'CANCELLED') AS cancelled,
-        COUNT(*) FILTER (WHERE request_type = 'ALLOCATION') AS type_allocation,
-        COUNT(*) FILTER (WHERE request_type = 'RETURN') AS type_return,
-        COUNT(*) FILTER (WHERE request_type = 'REPAIR') AS type_repair
+        COUNT(*)::int AS total_requests,
+        COUNT(*) FILTER (WHERE status = $1)::int AS pending_approval,
+        COUNT(*) FILTER (WHERE status = $2)::int AS in_progress,
+        COUNT(*) FILTER (WHERE status = $3)::int AS completed,
+        COUNT(*) FILTER (WHERE status = $4)::int AS rejected,
+        COUNT(*) FILTER (WHERE status = $5)::int AS cancelled,
+        COUNT(*) FILTER (WHERE request_type = $6)::int AS type_allocation,
+        COUNT(*) FILTER (WHERE request_type = $7)::int AS type_return,
+        COUNT(*) FILTER (WHERE request_type = $8)::int AS type_repair
       FROM service_request;
-    `);
+    `,
+      [
+        ServiceRequestStatus.PENDING_APPROVAL,
+        ServiceRequestStatus.IN_PROGRESS,
+        ServiceRequestStatus.COMPLETED,
+        ServiceRequestStatus.REJECTED,
+        ServiceRequestStatus.CANCELLED,
+        ServiceRequestType.ALLOCATION,
+        ServiceRequestType.RETURN,
+        ServiceRequestType.REPAIR,
+      ],
+    );
 
-    const assetCounts = await this.dataSource.query(`
+    const assetCounts = await this.dataSource.query(
+      `
       SELECT
-        COUNT(*) AS total_assets,
-        COUNT(*) FILTER (WHERE status = 'AVAILABLE') AS available_assets,
-        COUNT(*) FILTER (WHERE status = 'ASSIGNED') AS assigned_assets
+        COUNT(*)::int AS total_assets,
+        COUNT(*) FILTER (WHERE status = $1)::int AS available_assets,
+        COUNT(*) FILTER (WHERE status = $2)::int AS assigned_assets
       FROM asset;
-    `);
+    `,
+      [AssetStatus.AVAILABLE, AssetStatus.ASSIGNED],
+    );
 
     const sync = await this.dataSource.query(
       `SELECT id,status,source,extracted_at,finished_at,source_rows,upserted,unchanged,quarantined,metrics FROM legacy_sync.sync_run ORDER BY started_at DESC LIMIT 1`,

@@ -10,6 +10,7 @@ import { ServiceRequestEntity } from '../service-request/domain/service-request.
 import { RequestHistoryEntity } from '../service-request/domain/request-history.entity';
 import { AttachmentEntity } from '../service-request/domain/attachment.entity';
 import { TransitionService } from '../service-request/application/transition.service';
+import { AssetService } from '../asset/application/asset.service';
 import { ServiceRequestStatus, UserRole } from '@companylab/contracts';
 
 const url = process.env.TEST_DATABASE_URL;
@@ -87,7 +88,7 @@ integration('PostgreSQL 16 concurrency (isolated CI database)', () => {
     const actors = (await db.query("SELECT id FROM employee WHERE legacy_id='OP-1'")) as {
       id: string;
     }[];
-    const service = new TransitionService(db);
+    const service = new TransitionService(db, new AssetService(db));
     const results = await Promise.allSettled(
       ['REQ-1', 'REQ-2'].map((id) =>
         service.transition(

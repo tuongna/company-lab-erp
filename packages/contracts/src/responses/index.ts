@@ -2,20 +2,20 @@ import { ServiceRequestStatus, ServiceRequestType } from '../enums';
 
 export interface DashboardStatsResponse {
   requests: {
-    total_requests: string;
-    pending_approval: string;
-    in_progress: string;
-    completed: string;
-    rejected: string;
-    cancelled: string;
-    type_allocation: string;
-    type_return: string;
-    type_repair: string;
+    total_requests: number | string;
+    pending_approval: number | string;
+    in_progress: number | string;
+    completed: number | string;
+    rejected: number | string;
+    cancelled: number | string;
+    type_allocation: number | string;
+    type_return: number | string;
+    type_repair: number | string;
   };
   assets: {
-    total_assets: string;
-    available_assets: string;
-    assigned_assets: string;
+    total_assets: number | string;
+    available_assets: number | string;
+    assigned_assets: number | string;
   };
   mode: string;
   legacySource: string;
