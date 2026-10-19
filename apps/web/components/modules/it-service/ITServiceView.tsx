@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { Download, RefreshCw, ShieldAlert } from 'lucide-react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { ServiceRequestItem } from '@companylab/contracts';
-import { fetchDashboardStats, fetchRequests, fetchRequestDetail } from '@/lib/api-client';
+import {
+  fetchDashboardStats,
+  fetchRequests,
+  fetchRequestDetail,
+  queryKeys,
+} from '@/lib/api-client';
 import { MetricCards } from '@/components/dashboard/MetricCards';
 import { RequestFilters } from '@/components/requests/RequestFilters';
 import { RequestTable } from '@/components/requests/RequestTable';
@@ -20,12 +25,16 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
   const [page, setPage] = useState(1);
 
   const statsQuery = useQuery({
-    queryKey: ['dashboard-stats'],
+    queryKey: queryKeys.dashboard,
     queryFn: fetchDashboardStats,
   });
 
   const requestsQuery = useQuery({
-    queryKey: ['requests', { page, status: statusFilter, type: typeFilter }],
+    queryKey: queryKeys.requests.list({
+      page,
+      status: statusFilter || undefined,
+      type: typeFilter || undefined,
+    }),
     queryFn: () =>
       fetchRequests({
         page,
@@ -37,7 +46,7 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
   });
 
   const detailQuery = useQuery({
-    queryKey: ['request-detail', selectedId],
+    queryKey: selectedId ? queryKeys.requests.detail(selectedId) : ['request-detail-idle'],
     queryFn: () => fetchRequestDetail(selectedId!),
     enabled: Boolean(selectedId),
   });
