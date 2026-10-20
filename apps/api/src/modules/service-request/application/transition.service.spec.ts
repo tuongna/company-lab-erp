@@ -3,6 +3,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { ServiceRequestEntity } from '../domain/service-request.entity';
 import { RequestHistoryEntity } from '../domain/request-history.entity';
 import { AssetEntity } from '../../asset/domain/asset.entity';
+import { AssetService } from '../../asset/application/asset.service';
 import {
   AssetStatus,
   AssetType,
@@ -28,7 +29,7 @@ describe('TransitionService (FSM Execution)', () => {
       transaction: jest.fn().mockImplementation((cb) => cb(emMock)),
     } as unknown as jest.Mocked<DataSource>;
 
-    service = new TransitionService(dataSourceMock);
+    service = new TransitionService(dataSourceMock, new AssetService(dataSourceMock));
   });
 
   it('should successfully transition request and record audit history (Manager approves)', async () => {

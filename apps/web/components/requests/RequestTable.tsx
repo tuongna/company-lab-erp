@@ -1,9 +1,8 @@
-'use client';
-
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { ServiceRequestItem, ServiceRequestType } from '@companylab/contracts';
 import { RequestStatusBadge } from './RequestStatusBadge';
+import { useTranslation } from '@/lib/i18n/context';
 
 interface RequestTableProps {
   items: ServiceRequestItem[];
@@ -24,44 +23,46 @@ export function RequestTable({
   onSelect,
   onPageChange,
 }: RequestTableProps) {
+  const { t } = useTranslation();
+
   const getTypeText = (type: ServiceRequestType) => {
     switch (type) {
       case ServiceRequestType.ALLOCATION:
-        return 'Cấp phát';
+        return t.itService.typeAllocation;
       case ServiceRequestType.RETURN:
-        return 'Thu hồi';
+        return t.itService.typeReturn;
       case ServiceRequestType.REPAIR:
-        return 'Sửa chữa';
+        return t.itService.typeRepair;
       default:
         return type;
     }
   };
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="overflow-x-auto flex-1">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-surface-subtle text-muted uppercase font-semibold text-[10px] border-b border-border">
+    <div className="flex flex-1 flex-col">
+      <div className="flex-1 overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-border bg-surface-subtle text-sm font-semibold uppercase text-muted">
             <tr>
-              <th className="px-4 py-3">Mã đơn</th>
-              <th className="px-4 py-3">Loại yêu cầu</th>
-              <th className="px-4 py-3">Nhân viên</th>
-              <th className="px-4 py-3">Trạng thái</th>
-              <th className="px-4 py-3">Thiết bị</th>
-              <th className="px-4 py-3 text-right">Chi tiết</th>
+              <th className="px-4 py-3">{t.itService.colCode}</th>
+              <th className="px-4 py-3">{t.itService.colType}</th>
+              <th className="px-4 py-3">{t.itService.colEmployee}</th>
+              <th className="px-4 py-3">{t.itService.colStatus}</th>
+              <th className="px-4 py-3">{t.itService.colAsset}</th>
+              <th className="px-4 py-3 text-right">{t.itService.colDetails}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {loading && items.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-muted">
-                  Đang tải danh sách yêu cầu...
+                <td colSpan={6} className="py-10 text-center text-muted">
+                  {t.common.loading}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-muted">
-                  Không có yêu cầu nào phù hợp bộ lọc.
+                <td colSpan={6} className="py-10 text-center text-muted">
+                  {t.common.noData}
                 </td>
               </tr>
             ) : (
@@ -69,7 +70,7 @@ export function RequestTable({
                 <tr
                   key={r.id}
                   onClick={() => onSelect(r)}
-                  className={`hover:bg-surface-subtle cursor-pointer transition ${
+                  className={`cursor-pointer transition hover:bg-surface-subtle ${
                     selectedId === r.id ? 'bg-primary/10' : ''
                   }`}
                 >
@@ -81,7 +82,7 @@ export function RequestTable({
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-medium text-foreground">{r.employee?.name || '—'}</div>
-                    <div className="text-[10px] text-muted">{r.employee?.department}</div>
+                    <div className="text-sm text-muted">{r.employee?.department}</div>
                   </td>
                   <td className="px-4 py-3">
                     <RequestStatusBadge status={r.status} />
@@ -90,7 +91,7 @@ export function RequestTable({
                     {r.asset ? `${r.asset.model} (${r.asset.legacyId || 'No Code'})` : '—'}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <ChevronRight className="w-4 h-4 text-muted inline" />
+                    <ChevronRight className="inline h-4 w-4 text-muted" />
                   </td>
                 </tr>
               ))
@@ -100,23 +101,26 @@ export function RequestTable({
       </div>
 
       {/* Pagination Controls */}
-      <div className="p-3 border-t border-border bg-surface-subtle flex items-center justify-between text-xs">
+      <div className="flex items-center justify-between border-t border-border bg-surface-subtle p-3 text-xs">
         <button
+          type="button"
           disabled={page <= 1 || loading}
           onClick={() => onPageChange(Math.max(page - 1, 1))}
-          className="px-3 py-1 bg-surface border border-border rounded-lg disabled:opacity-50 text-foreground hover:bg-surface-subtle transition shadow-xs"
+          className="shadow-xs rounded-lg border border-border bg-surface px-3 py-1 text-foreground transition hover:bg-surface-subtle disabled:opacity-50"
         >
-          Trang trước
+          {t.common.previousPage}
         </button>
         <span className="text-muted">
-          Trang <strong className="text-foreground">{page}</strong> / {totalPages || 1}
+          {t.common.page} <strong className="text-foreground">{page}</strong> {t.common.of}{' '}
+          {totalPages || 1}
         </span>
         <button
+          type="button"
           disabled={page >= totalPages || loading}
           onClick={() => onPageChange(Math.min(page + 1, totalPages))}
-          className="px-3 py-1 bg-surface border border-border rounded-lg disabled:opacity-50 text-foreground hover:bg-surface-subtle transition shadow-xs"
+          className="shadow-xs rounded-lg border border-border bg-surface px-3 py-1 text-foreground transition hover:bg-surface-subtle disabled:opacity-50"
         >
-          Trang sau
+          {t.common.nextPage}
         </button>
       </div>
     </div>
