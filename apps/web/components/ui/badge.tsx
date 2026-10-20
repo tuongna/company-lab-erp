@@ -3,15 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 export const badgeVariants = cva(
-  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-medium border transition-colors',
+  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-sm font-medium transition-colors',
   {
     variants: {
       tone: {
-        neutral: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
-        success: 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/20',
-        warning: 'bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20',
-        danger: 'bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/20',
-        info: 'bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/20',
+        neutral: 'border-slate-500/20 bg-slate-500/10 text-slate-700 dark:text-slate-300',
+        success: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300',
+        warning: 'border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-300',
+        danger: 'border-rose-500/20 bg-rose-500/10 text-rose-800 dark:text-rose-300',
+        info: 'border-sky-500/20 bg-sky-500/10 text-sky-800 dark:text-sky-300',
+        indigo: 'border-indigo-500/20 bg-indigo-500/10 text-indigo-800 dark:text-indigo-300',
       },
       size: {
         sm: 'px-2 py-0.5 text-xs',
@@ -25,7 +26,7 @@ export const badgeVariants = cva(
   },
 );
 
-export type BadgeTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+export type BadgeTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'indigo';
 
 const dotVariants: Record<string, string> = {
   neutral: 'bg-slate-400',
@@ -33,6 +34,7 @@ const dotVariants: Record<string, string> = {
   warning: 'bg-amber-500',
   danger: 'bg-rose-500',
   info: 'bg-sky-500',
+  indigo: 'bg-indigo-500',
 };
 
 export interface BadgeProps

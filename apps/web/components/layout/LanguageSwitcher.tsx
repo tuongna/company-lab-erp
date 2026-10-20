@@ -33,16 +33,15 @@ export function LanguageSwitcher() {
         aria-haspopup="true"
         aria-label={`${t.topbar.switchLanguage}: ${currentOption.label}`}
         title={`${t.topbar.switchLanguage}: ${currentOption.label}`}
-        className="shadow-2xs flex h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2 text-sm font-medium text-foreground transition hover:bg-surface-subtle sm:gap-2 sm:px-2.5"
+        className="shadow-2xs flex h-8 items-center gap-1 rounded-lg border border-border bg-surface px-2 text-sm font-medium text-foreground transition hover:bg-surface-subtle sm:gap-1.5 lg:gap-2 lg:px-2.5"
       >
-        <FlagIcon code={currentOption.code} className="h-[13px] w-[18px] shrink-0" />
-        <span className="hidden text-sm font-semibold tracking-wide sm:inline">
+        <FlagIcon code={currentOption.code} size="md" className="shrink-0" />
+        <span className="hidden text-sm font-semibold tracking-wide lg:inline">
           {currentOption.label}
         </span>
         <ChevronDown
-          size={14}
           className={cn(
-            'shrink-0 text-muted transition-transform duration-150',
+            'h-3.5 w-3.5 shrink-0 text-muted transition-transform duration-150',
             open && 'rotate-180',
           )}
           aria-hidden="true"
@@ -75,10 +74,10 @@ export function LanguageSwitcher() {
                 )}
               >
                 <div className="flex items-center gap-2.5">
-                  <FlagIcon code={opt.code} className="h-[13px] w-[18px]" />
+                  <FlagIcon code={opt.code} size="md" />
                   <span>{opt.label}</span>
                 </div>
-                {isSelected && <Check size={14} className="shrink-0 text-primary" />}
+                {isSelected && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
               </button>
             );
           })}

@@ -87,3 +87,34 @@ export const mockProjects: ProjectItem[] = [
     budget: '₫760M',
   },
 ];
+
+export const PAGE_ROUTES: Record<Page, string> = {
+  Overview: 'overview',
+  'IT Service': 'it-service',
+  Projects: 'projects',
+  People: 'people',
+  'Data & Migration': 'migration',
+  'My Work': 'my-work',
+  Sales: 'sales',
+  Resources: 'resources',
+  Timesheets: 'timesheets',
+  Finance: 'finance',
+  Reports: 'reports',
+  Settings: 'settings',
+};
+
+export const ROUTE_PAGES: Record<string, Page> = {
+  overview: 'Overview',
+  'it-service': 'IT Service',
+  projects: 'Projects',
+  people: 'People',
+  migration: 'Data & Migration',
+  'data-migration': 'Data & Migration',
+  'my-work': 'My Work',
+  sales: 'Sales',
+  resources: 'Resources',
+  timesheets: 'Timesheets',
+  finance: 'Finance',
+  reports: 'Reports',
+  settings: 'Settings',
+};

@@ -2,44 +2,27 @@
 
 import React from 'react';
 import { ServiceRequestStatus } from '@companylab/contracts';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { Badge, type BadgeProps, type BadgeTone } from '@/components/ui/badge';
 import { useTranslation } from '@/lib/i18n/context';
 
-export const requestStatusBadgeVariants = cva(
-  'inline-block px-2.5 py-0.5 rounded-full text-sm font-semibold border transition-colors',
-  {
-    variants: {
-      status: {
-        [ServiceRequestStatus.COMPLETED]:
-          'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800/60',
-        [ServiceRequestStatus.IN_PROGRESS]:
-          'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800/60',
-        [ServiceRequestStatus.PENDING_APPROVAL]:
-          'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-800/60',
-        [ServiceRequestStatus.APPROVED]:
-          'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-800/60',
-        [ServiceRequestStatus.REJECTED]:
-          'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-400 dark:border-rose-800/60',
-        [ServiceRequestStatus.CANCELLED]:
-          'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
-      },
-    },
-    defaultVariants: {
-      status: ServiceRequestStatus.PENDING_APPROVAL,
-    },
-  },
-);
+export const STATUS_TONE_MAP: Record<ServiceRequestStatus, BadgeTone> = {
+  [ServiceRequestStatus.COMPLETED]: 'success',
+  [ServiceRequestStatus.IN_PROGRESS]: 'info',
+  [ServiceRequestStatus.PENDING_APPROVAL]: 'warning',
+  [ServiceRequestStatus.APPROVED]: 'indigo',
+  [ServiceRequestStatus.REJECTED]: 'danger',
+  [ServiceRequestStatus.CANCELLED]: 'neutral',
+};
 
-export interface RequestStatusBadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof requestStatusBadgeVariants> {
+export interface RequestStatusBadgeProps extends Omit<BadgeProps, 'tone'> {
   status: ServiceRequestStatus;
 }
 
 export function RequestStatusBadge({
   status,
   children,
-  className,
+  size = 'md',
+  showDot = true,
   ...props
 }: RequestStatusBadgeProps) {
   const { t } = useTranslation();
@@ -63,9 +46,11 @@ export function RequestStatusBadge({
     }
   };
 
+  const tone = STATUS_TONE_MAP[status] ?? 'neutral';
+
   return (
-    <span className={cn(requestStatusBadgeVariants({ status }), className)} {...props}>
+    <Badge tone={tone} size={size} showDot={showDot} {...props}>
       {children ?? getStatusLabel(status)}
-    </span>
+    </Badge>
   );
 }

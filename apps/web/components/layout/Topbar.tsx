@@ -24,8 +24,8 @@ export function Topbar({
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-3 sm:px-4 md:px-6">
-      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-3 md:px-5 lg:px-6">
+      <div className="flex min-w-0 items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
@@ -36,11 +36,9 @@ export function Topbar({
           <Menu className="h-4 w-4" />
         </Button>
         <div className="flex min-w-0 items-center gap-1.5 text-xs text-muted">
-          <span className="hidden sm:inline">CompanyLab</span>
+          <span className="hidden font-medium sm:inline">CompanyLab</span>
           <span className="hidden text-muted-foreground sm:inline">/</span>
-          <strong className="max-w-[120px] truncate font-semibold text-foreground sm:max-w-none">
-            {page}
-          </strong>
+          <strong className="truncate font-semibold text-foreground">{page}</strong>
         </div>
       </div>
 
@@ -50,11 +48,11 @@ export function Topbar({
           onClick={openSearch}
           aria-label={t.topbar.searchWorkspace}
           title={t.topbar.searchWorkspace}
-          className="shadow-xs flex h-8 min-w-8 items-center justify-center gap-2 rounded-lg border border-border bg-surface-subtle px-2 text-xs text-muted transition hover:border-slate-400 dark:hover:border-slate-500 sm:pl-3 sm:pr-0.5"
+          className="shadow-xs flex h-8 items-center justify-center gap-2 rounded-lg border border-border bg-surface-subtle px-2 text-xs text-muted transition hover:border-slate-400 dark:hover:border-slate-500 lg:pl-3 lg:pr-0.5"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
-          <span className="hidden sm:inline">{t.common.search}...</span>
-          <kbd className="shadow-2xs hidden rounded-[0.375rem] border border-border bg-surface px-1.5 py-0.5 font-mono text-[14px] text-muted-foreground md:block">
+          <span className="hidden lg:inline">{t.common.search}...</span>
+          <kbd className="shadow-2xs hidden rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-sm text-muted-foreground lg:block">
             {t.topbar.searchKeyboardHint}
           </kbd>
         </button>
@@ -63,10 +61,10 @@ export function Topbar({
           onClick={openCreate}
           aria-label={t.topbar.createNew}
           title={t.topbar.createNew}
-          className="px-2 sm:px-3"
+          className="h-8 px-2.5 lg:px-3"
         >
-          <Plus size={15} className="shrink-0" />
-          <span className="hidden sm:inline">{t.topbar.createNew}</span>
+          <Plus className="h-4 w-4 shrink-0" />
+          <span className="hidden lg:inline">{t.topbar.createNew}</span>
         </Button>
 
         {/* Language Switcher */}
@@ -81,9 +79,9 @@ export function Topbar({
           title={theme === 'light' ? t.topbar.switchToDark : t.topbar.switchToLight}
         >
           {theme === 'light' ? (
-            <Moon size={15} className="shrink-0 text-slate-600" />
+            <Moon className="h-4 w-4 shrink-0 text-slate-600" />
           ) : (
-            <Sun size={15} className="shrink-0 text-amber-400" />
+            <Sun className="h-4 w-4 shrink-0 text-amber-400" />
           )}
         </Button>
 

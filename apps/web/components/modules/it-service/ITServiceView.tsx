@@ -135,7 +135,7 @@ export function ITServiceView({ toast }: { toast: (s: string) => void }) {
 
       {/* Request Table & Timeline layout */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="shadow-xs flex flex-col overflow-hidden rounded-xl border border-border bg-surface lg:col-span-2">
+        <div className="shadow-xs flex flex-col rounded-xl border border-border bg-surface lg:col-span-2">
           <RequestFilters
             status={statusFilter}
             type={typeFilter}

@@ -10,6 +10,7 @@ import { RequestHistoryEntity } from './modules/service-request/domain/request-h
 import { AttachmentEntity } from './modules/service-request/domain/attachment.entity';
 import { SyncRunEntity, QuarantineEntity } from './modules/legacy-sync/domain/sync.entity';
 import { OrganizationModule } from './modules/organization/organization.module';
+import { IdentityModule } from './modules/identity/identity.module';
 import { AssetModule } from './modules/asset/asset.module';
 import { ServiceRequestModule } from './modules/service-request/service-request.module';
 import { LegacySyncModule } from './modules/legacy-sync/legacy-sync.module';
@@ -43,6 +44,7 @@ import { LegacySyncModule } from './modules/legacy-sync/legacy-sync.module';
       }),
     }),
     OrganizationModule,
+    IdentityModule,
     AssetModule,
     ServiceRequestModule,
     LegacySyncModule,

@@ -129,7 +129,7 @@ export function MigrationView({
             </div>
             <Button variant="secondary">Connect source</Button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-border bg-surface-subtle text-sm font-semibold uppercase text-muted">
                 <tr>

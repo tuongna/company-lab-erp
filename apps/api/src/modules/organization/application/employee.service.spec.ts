@@ -60,4 +60,22 @@ describe('EmployeeService', () => {
       expect(result).toBe(mockEmp);
     });
   });
+
+  describe('findByEmail', () => {
+    it('should query employee by normalized lowercase email', async () => {
+      const mockEmp = {
+        id: 'emp-uuid',
+        name: 'Alice',
+        email: 'alice@demo.local',
+      } as EmployeeEntity;
+      repoMock.findOne.mockResolvedValue(mockEmp);
+
+      const result = await service.findByEmail(' Alice@Demo.Local ');
+
+      expect(repoMock.findOne).toHaveBeenCalledWith({
+        where: { email: 'alice@demo.local' },
+      });
+      expect(result).toBe(mockEmp);
+    });
+  });
 });

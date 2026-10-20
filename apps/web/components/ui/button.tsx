@@ -3,18 +3,18 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer gap-1.5 shrink-0 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[0.98]',
+  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 'bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs',
+        primary: 'shadow-xs bg-primary text-primary-foreground hover:bg-primary-hover',
         secondary:
-          'bg-surface text-foreground hover:bg-surface-subtle border border-border shadow-2xs',
+          'shadow-2xs border border-border bg-surface text-foreground hover:bg-surface-subtle',
         ghost:
-          'text-muted-foreground hover:text-foreground hover:bg-surface-subtle active:scale-100',
-        danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+          'text-muted-foreground hover:bg-surface-subtle hover:text-foreground active:scale-100',
+        danger: 'shadow-xs bg-rose-600 text-white hover:bg-rose-700',
         outline:
-          'border border-border bg-transparent hover:bg-surface-subtle text-foreground shadow-2xs',
+          'shadow-2xs border border-border bg-transparent text-foreground hover:bg-surface-subtle',
       },
       size: {
         sm: 'h-7 min-w-7 px-2.5 text-xs',
@@ -42,14 +42,11 @@ export function Button({
   type = 'button',
   ...props
 }: ButtonProps) {
-  // If variant is ghost and no size provided, default to icon padding for backward-compatibility
-  const resolvedSize = size ?? (variant === 'ghost' ? 'icon' : 'md');
-
   return (
     <button
       type={type}
       disabled={disabled}
-      className={cn(buttonVariants({ variant, size: resolvedSize }), className)}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     >
       {children}

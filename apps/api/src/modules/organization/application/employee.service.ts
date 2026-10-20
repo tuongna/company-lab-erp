@@ -41,4 +41,11 @@ export class EmployeeService {
 
     return repo.findOne({ where });
   }
+
+  async findByEmail(email: string): Promise<EmployeeEntity | null> {
+    const repo = this.dataSource.getRepository(EmployeeEntity);
+    return repo.findOne({
+      where: { email: email.toLowerCase().trim() },
+    });
+  }
 }

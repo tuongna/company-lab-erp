@@ -12,6 +12,40 @@ const dictionaries: Record<Locale, Translations> = {
   ko,
 };
 
+const COOKIE_NAME = 'companylab_locale';
+const STORAGE_KEY = 'companylab-locale';
+export const DEFAULT_LOCALE: Locale = 'en';
+
+function isValidLocale(val: unknown): val is Locale {
+  return val === 'vi' || val === 'en' || val === 'ko';
+}
+
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match && match[1] ? decodeURIComponent(match[1]) : null;
+}
+
+function setCookie(name: string, value: string, days = 365) {
+  if (typeof document === 'undefined') return;
+  const maxAge = days * 24 * 60 * 60;
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+}
+
+function getUrlLocale(): Locale | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get('lang') || params.get('locale');
+    if (isValidLocale(lang)) {
+      return lang;
+    }
+  } catch {
+    // Ignore URL parsing errors
+  }
+  return null;
+}
+
 interface I18nContextValue {
   locale: Locale;
   setLocale: (locale: Locale) => void;
@@ -19,41 +53,118 @@ interface I18nContextValue {
 }
 
 const I18nContext = createContext<I18nContextValue>({
-  locale: 'vi',
+  locale: DEFAULT_LOCALE,
   setLocale: () => {},
-  t: vi,
+  t: en,
 });
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('vi');
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: React.ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale || DEFAULT_LOCALE);
 
+  // Sync initial locale or detect from client sources if not provided via route param
   useEffect(() => {
+    if (initialLocale && isValidLocale(initialLocale)) {
+      setLocaleState(initialLocale);
+      document.documentElement.lang = initialLocale;
+      setCookie(COOKIE_NAME, initialLocale);
+      try {
+        localStorage.setItem(STORAGE_KEY, initialLocale);
+      } catch {}
+      return;
+    }
+
+    // Fallback detection if accessed outside dynamic [locale] segment:
+    // 1. URL search param
+    const urlLoc = getUrlLocale();
+    if (urlLoc) {
+      setLocaleState(urlLoc);
+      document.documentElement.lang = urlLoc;
+      setCookie(COOKIE_NAME, urlLoc);
+      try {
+        localStorage.setItem(STORAGE_KEY, urlLoc);
+      } catch {}
+      return;
+    }
+
+    // 2. Cookie
+    const cookieLoc = getCookie(COOKIE_NAME);
+    if (isValidLocale(cookieLoc)) {
+      setLocaleState(cookieLoc);
+      document.documentElement.lang = cookieLoc;
+      try {
+        localStorage.setItem(STORAGE_KEY, cookieLoc);
+      } catch {}
+      return;
+    }
+
+    // 3. LocalStorage
     try {
-      const saved = localStorage.getItem('companylab-locale') as Locale | null;
-      if (saved && (saved === 'vi' || saved === 'en' || saved === 'ko')) {
+      const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
+      if (isValidLocale(saved)) {
         setLocaleState(saved);
         document.documentElement.lang = saved;
-      } else {
-        const browserLang = navigator.language.slice(0, 2);
-        if (browserLang === 'ko' || browserLang === 'en') {
-          setLocaleState(browserLang as Locale);
-          document.documentElement.lang = browserLang;
-        } else {
-          document.documentElement.lang = 'vi';
-        }
+        setCookie(COOKIE_NAME, saved);
+        return;
       }
-    } catch {
-      // Fallback silently if localStorage is restricted
+    } catch {}
+
+    // 4. Browser Language
+    if (typeof navigator !== 'undefined') {
+      const browserLang = navigator.language.slice(0, 2);
+      if (isValidLocale(browserLang)) {
+        setLocaleState(browserLang);
+        document.documentElement.lang = browserLang;
+        setCookie(COOKIE_NAME, browserLang);
+        try {
+          localStorage.setItem(STORAGE_KEY, browserLang);
+        } catch {}
+        return;
+      }
     }
-  }, []);
+
+    // 5. Default
+    document.documentElement.lang = DEFAULT_LOCALE;
+  }, [initialLocale]);
 
   const setLocale = (newLocale: Locale) => {
+    if (!isValidLocale(newLocale)) return;
     setLocaleState(newLocale);
-    try {
-      localStorage.setItem('companylab-locale', newLocale);
+
+    if (typeof document !== 'undefined') {
       document.documentElement.lang = newLocale;
-    } catch {
-      // Ignore storage errors
+    }
+
+    // Persist to Cookie for server-side compatibility
+    setCookie(COOKIE_NAME, newLocale);
+
+    // Persist to LocalStorage for offline/client fallback
+    try {
+      localStorage.setItem(STORAGE_KEY, newLocale);
+    } catch {}
+
+    // If URL uses sub-path /[locale]/..., switch path to new locale
+    if (typeof window !== 'undefined') {
+      try {
+        const pathname = window.location.pathname;
+        const segments = pathname.split('/');
+        if (segments[1] && isValidLocale(segments[1])) {
+          segments[1] = newLocale;
+          const newPath = segments.join('/') + window.location.search;
+          window.location.href = newPath;
+          return;
+        }
+
+        // Fallback for query param
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', newLocale);
+        window.history.replaceState(window.history.state, '', url.toString());
+      } catch {}
     }
   };
 

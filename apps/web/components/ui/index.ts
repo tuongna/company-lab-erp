@@ -5,3 +5,5 @@ export * from './card';
 export * from './flag-icon';
 export * from './icon';
 export * from './kpi';
+export * from './table';
+export * from './select';
